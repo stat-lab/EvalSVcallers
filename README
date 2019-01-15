@@ -33,31 +33,40 @@ scripts/evaluate_SV_callers.pl <option> [vcf file from [1]-(a)]
 
 [Example]
 
-(For NA12878 SVs)
+# For NA12878 SVs
 
 scripts/evaluate_SV_callers.pl -r N Pindel.NA78.vcf
 
-(For Sim-A SVs)
+# For Sim-A SVs
 
 scripts/evaluate_SV_callers.pl -r A Pindel.simA.vcf
+
+# For NA12878 SVs, integrating trio SV data
+
+scripts/evaluate_SV_callers.pl -r N Pindel.NA78.vcf -p1 Pindel.parent1.vcf -p2 Pindel.parent2.vcf
 
 
 [Options]
 
-   --ref or -r <STR>        reference SV type (A|N|ME|VE|MT) (A: Sim-A simulated data, N: NA12878 real data, ME: MEI simulated data, VE: VEI simulated data, MT: NUMT simulated data, C: custum data provided by users) [default: A]
-   --sv_type or -st <STR>   SV type (ALL|DEL|DUP|INS|INV|TRA) if specifying multi type, e.g., DEL,INS [default: ALL]
-   --chr or -c <STR>        target chromosome to be analyzed [all or chr name(s), e.g., 4,5,6,X]
-   --len or -l <INT>        minimum size (bp) of SV to be analyzed [default: 30]
-   --xlen or -xl <INT>      maximum size of SV to be analyzed [default: 1000000]
-   --ref_len or -rl <INT>   minimum size of reference SV [default: 30]
-   --ref_xlen or -rxl <INT> maximum size of reference SV [default: 1000000]
-   --ovl_rate or -or <FLOAT> minimum reciprocal overlapping rate between reference and called SVs [default: 0.5 for real data, 0.8 (0.6 for SVs < 1 Kb) for Sim-A data]
-   --read_set or -rs <INT>  read set of minimum number of reads (1: set1-3,4,5,6,7,8,9; 2: set-23,5,7,9,11,13,15,17,19) [default: 1]
-   --sd_ins or -sdi <INT>   maximum allowable length of INS breakpoints [default: 200]
-   --ex_xy or xy            exclude chrX and chrY [default: false]
-   --eval_gt or -eg         determine genotype accuracy for each SV type with the Sim-A data [default: false]
-   --eval_bp or -eb         determine breakpoint and SV size accuracy for each SV type with the Sim-A data [default: false]
-   --help or -h             output help message
+       --ref or -r <STR>        reference SV type (A|N) [default: A]
+       --sv_type or -st <STR>   SV type (ALL|DEL|DUP|INS|INV|TRA) if specifying multi type, e.g., DEL,INS [default: ALL]
+       --parent1 or -p1 <STR>   SV vcf file of parent1 (optional)
+       --parent2 or -p2 <STR>   SV vcf file of parent2 (optional)
+       --ref2 or -r2 <STR>      reference SV vcf file (optional)
+       --ref_dir or -rd <STR>   directory containing reference SV vcf files (optional)
+       --chr or -c <STR>        target chromosome to be analyzed [all or chr name(s), e.g., 4,5,6,X]
+       --len or -l <INT>        minimum size (bp) of SV [default: 30]
+       --xlen or -xl <INT>      maximum size of SV [default: 1000000]
+       --ref_len or -rl <INT>   minimum size of reference SV [default: 30]
+       --ref_xlen or -rxl <INT> maximum size of reference SV [default: 1000000]
+       --min_read or -mr <INT>  minimum number of reads supporting an SV [default: 0]
+       --read_set or -rs <INT>  read set of minimum number of reads (1: 2,3,4,5,6,7,8,9,10,12; 2: 2,3,5,7,9,11,13,15,17,19,30,40) [default: 1]
+       --sd_ins or -sdi <INT>   maximum allowable length of INS breakpoints [default: 1000]
+       --eval_gt or -eg         determine genotype accuracy for each SV type with the Sim-A data [default: false]
+       --eval_bp or -eb         determine breakpoint and SV size accuracy for each SV type with the Sim-A data [default: false]
+       --ins or -i              evaluate accuracy for INSs with called insertion size [default: false]
+       --in_y or -y             include chrY [default: false]
+       --help or -h             output help message
 
 
 (c) Reporting precision and recall of overlap SV calls from pair(s) of tools
@@ -66,31 +75,39 @@ scripts/evaluate_SV_overlap_calls.pl -t <tool:RSS list>		# RSS: minimum number o
 
 [Example]
 
-(For overlap calls from BreakDancer-DELLY, BreakDancer-Manta, DELLY-Manta pairs)
+# For overlap calls of NA12878 from BreakDancer-DELLY, BreakDancer-Manta, DELLY-Manta pairs
 
-scripts/evaluate_SV_overlap_calls.pl -t BreakDancer:4 DELLY:3 Manta:3 -p BD-DELLY-Manta-overlap
+scripts/evaluate_SV_overlap_calls.pl -r N -t BreakDancer:4 DELLY:3 Manta:3 -p BD-DELLY-Manta-overlap
 
-(For outputting vcf file(s) for overlap calls for each combination of tool pairs)
+# For overlap calls of NA12878 from BreakDancer-DELLY, BreakDancer-Manta, DELLY-Manta pairs, integrating trio data
 
-scripts/evaluate_SV_overlap_calls.pl -t BreakDancer:4 DELLY:3 Manta:3 -p BD-DELLY-Manta-overlap -vcf
+scripts/evaluate_SV_overlap_calls.pl -r N -t BreakDancer:4 DELLY:3 Manta:3 -pv BreakDancer.parent1.vcf BreakDancer.parent2.vcf DELLY.parent1.vcf DELLY.parent2.vcf Manta.parent1.vcf Manta.prent2.vcf -p BD-DELLY-Manta-overlap-trio
+
+# For outputting vcf file(s) for overlap calls of NA12878 for each combination of tool pairs
+
+scripts/evaluate_SV_overlap_calls.pl -r N -t BreakDancer:4 DELLY:3 Manta:3 -p BD-DELLY-Manta-overlap -vcf
+
+(In this case, three vcf files showing overlapped calls between each combination of the three algorithms. In each vcf file, true positive calls that matched the reference SV data and false positive calls are labelled with 'TP' and 'FP', respectively, at the strat of each line.)
 
 
 [Options]
 
-   --ref or -r <STR>        reference SV type [A|N] (A: Sim-A data, N: NA12878 real data) [default: A]
-   --tools or -t <STR>      list of tool:RSS, separated with space (e.g., Pindel:3 Lumpy:5) [mandatory]   (RSS: minimum number of reads supporting an SV)
-   --sv_type or -st <STR>   SV type (ALL|DEL|DUP|INS|INV|TRA) [default: ALL]
-   --sv_size or -ss <STR>   SV size, SS, S, M, L, Lo, or ALL, SS: 30-100 bp, S: 50-1000 bp, M: 1000-100,000 bp, Lo: 500-2,000,000 bp, L: 100,000-2,000,000 bp [default: ALL]
-   --min_size or -s <INT>   minimum size (bp) of SV [default: 30]
-   --var_sd or -vsd <INT>   standard deviation of break points [default: 125]
-   --ins_sd or -isd <INT>   standard deviation of break points for insertions [default: 1000]
-   --read_len or -rl <INT>  read length [default: 125]
-   --ovl_rate1 or -or1 <FLOAT> minimum overlap rate between SV-1 and SV-2 (except INSs) from 2 call sets [default: 0.6]
-   --ovl_rate2 or -or2 <FLOAT> minimum overlap rate between called SV and Ref SV [default: 0.5 for the real data, 0.6 and 0.8 for the size SS/S and M/L of the Sim-A data, respectively]
-   --dir or -d <STR>        directory of input vcf files (which should contain vcf files with the tool name sepcified with the -t option, e.g., Pindel.NA78.vcf) [default: ./]
-   --prefix or -p <STR>     prefix of output (the result is output in $prefix.eval.txt if specified) [default: STDOUT]
-   --vcf_out or -vcf        output vcf file for overlapping calls between tool pairs [default: false]
-   --help or -h             output help message
+       --ref or -r <STR>        reference SV type [A|N]
+       --tools or -t <STR>      list of tool:read (e.g., Pindel:3 Lumpy:5)
+       --sv_type or -st <STR>   SV type (ALL|DEL|DUP|INS|INV|TRA) [default: ALL]
+       --sv_size or -ss <STR>   SV size, SS, S, M, L, Lo, or ALL, SS: 30-100 bp, S: 50-1000 bp, M: 1000-100,000 bp, Lo: 500-2,000,000 bp, L: 100,000-2,000,000 bp [default: ALL]
+       --min_size or -s <INT>   minimum size (bp) of SV [default: 50]
+       --var_sd or -vsd <INT>   standard deviation of break points [default: 125]
+       --ins_sd or -isd <INT>   standard deviation of break points for insertions [default: 200]
+       --read_len or -rl <INT>  read length [default: 125]
+       --ovl_rate1 or -or1 <FLOAT> minimum overlap rate between SV-1 and SV-2 (except INSs) from 2 call sets [default: 0.6]
+       --dir or -d <STR>        directory of input vcf files [default: ./]
+       --parent_vcf or -pv <STR> list of parent vcf files (e.g., Pindel.mother.vcf Pindel.father.vcf Lumpy.mother.vcf Lumpy.father.vcf) [either specify -pd or -pv when using trio data]
+       --parent_dir or -p <STR> directory containing parent vcf files (should not include child vcf files in this directory)
+       --in_y or -y             include chrY [default: false]
+       --prefix or -p <STR>     prefix of output
+       --vcf_out or -vcf        output vcf file for overlapping calls between tool pairs [default: false]
+       --help or -h             output help message
 
 
 
@@ -190,7 +207,7 @@ scripts/generate_sim_genome_VEI.pl -r chr18.fa -p Sim-VEI -s 0.01 -i 0.002 -vn 1
 
 (a) Sim-A
 
-Simulated diploid genome: Simulated_data_in_our_study/Sim-A/Sim-A.diploid.fa.URL.txt (indicating a link to Sim-A.diploid.fa.gz to download)
+Simulated diploid genome: Simulated_data_in_our_study/Sim-A/Sim-A.diploid.fa.gz
 Simulated SVs in the genomes: Simulated_data_in_our_study/Sim-A/Sim-A.SV.vcf
 (3,530 DELs, 1,656 DUPs, 2,819 INSs, and 309 INVs (4,853 heterozygous SVs) had been introduced into the Sim-A diploid genome.)
 
@@ -215,7 +232,7 @@ Simulated SVs in the genomes: Simulated_data_in_our_study/Sim-VEI/Sim-VEI.chr17.
 
 ## Simulate paired-end reads using the ART simulator
 
-The ART simulator is available at https://www.niehs.nih.gov/research/resources/software/biostatistics/art/index.cfm.
+The ART simulator is available at .
 
 (For generating paired-end reads with the Sim-A diploid genome, Sim-A.diploid.fa)
 # The paired-end reads have 125 bp in length, 500 bp of insert size, 100 bp of insert size SD, and 30x coverage.
