@@ -1,0 +1,244 @@
+#EvalSVcallers
+
+EvalSVcallers provides scripts for evaluating SV calling results obtained with NA12878 whole genome sequencing data or simulated WGS data. In addition, it also provides scripts for generating simulated mobile element insertion (MEI), nuclear mitochondrial insertion (NUMT), and viral element insertion (VEI) datasets.
+
+The evaluate_SV_callers.pl script in the script folder outputs precision and recall values of SV calls for each SV type and size range. By default, it evaluates SV calls obtained with the simulated Sim-A data. By specifying N, MEI, VEI, or MT with an option -r, it evaluates SV calls obtained with NA12878 real data, Sim-MEI, Sim-VEI, or Sim-NUMT simulated data, respectively. The reference SV vcf file for the NA12878 real data is NA12878_DGV-2015_LR-assembly.vcf in the Ref_SV folder. The other reference vcf files for the simulated datasets used in our study are Sim-A.SV.vcf, Sim-MEI.chr17.vcf, Sim-VEI.chr17.vcf, and Sim-NUMT.chr17.vcf in the Simulated_data_in_our_study folder. By specifying a reference SV vcf file with the -r option, users can evaluate SV calls obtained with specific WGS data corresponding to the specified reference SV data.
+
+The evaluate_SV_overlap_calls.pl script in the script folder outputs precision and recall values of overlap calls between a pair of tools for each SV type and size range It outputs the results for all the combinations of pairs of tools specified with the t option. By specifying the -vcf option, it also outputs vcf file(s) for overlap SV calls for every pairs of tools.
+
+[1] Evaluate SV calls
+
+(a) Converting the output files for SV callers to a vcf format compatible to this analysis
+
+
+scripts/convert_SV_callers_vcf.pl <option> [output file(s) from a SV caller] > [output vcf file]
+
+[Example]
+
+scripts/convert_SV_callers_vcf.pl -t Pindel pindel.DEL.out pindel.DUP.out > Pindel.vcf
+
+
+[Options]
+
+   --tool or -t <STR>       a tool name (69 tools used in our study) [mandatory]
+   --class or -c <STR>      specify when tool is Mobster or PBHoney (MEI|NUMT|VEI for Mobster, NGM for PBHoney-NGM)
+   --len or -l <INT>        minimum size (bp) of SV to be kept [default: 30]
+   --xlen or -xl <INT>      maximum size (bp) of SV to be kept [default: 20000000]
+   --help or -h             output help message
+
+
+(b) Reporting precision and recall of SV calls from a single tool
+
+scripts/evaluate_SV_callers.pl <option> [vcf file from [1]-(a)]
+
+[Example]
+
+# For NA12878 SVs
+
+scripts/evaluate_SV_callers.pl -r N Pindel.NA78.vcf
+
+# For Sim-A SVs
+
+scripts/evaluate_SV_callers.pl -r A Pindel.simA.vcf
+
+# For NA12878 SVs, integrating trio SV data
+
+scripts/evaluate_SV_callers.pl -r N Pindel.NA78.vcf -p1 Pindel.parent1.vcf -p2 Pindel.parent2.vcf
+
+
+[Options]
+
+       --ref or -r <STR>        reference SV type (A|N) [default: A]
+       --sv_type or -st <STR>   SV type (ALL|DEL|DUP|INS|INV|TRA) if specifying multi type, e.g., DEL,INS [default: ALL]
+       --parent1 or -p1 <STR>   SV vcf file of parent1 (optional)
+       --parent2 or -p2 <STR>   SV vcf file of parent2 (optional)
+       --ref2 or -r2 <STR>      reference SV vcf file (optional)
+       --ref_dir or -rd <STR>   directory containing reference SV vcf files (optional)
+       --chr or -c <STR>        target chromosome to be analyzed [all or chr name(s), e.g., 4,5,6,X]
+       --len or -l <INT>        minimum size (bp) of SV [default: 30]
+       --xlen or -xl <INT>      maximum size of SV [default: 1000000]
+       --ref_len or -rl <INT>   minimum size of reference SV [default: 30]
+       --ref_xlen or -rxl <INT> maximum size of reference SV [default: 1000000]
+       --min_read or -mr <INT>  minimum number of reads supporting an SV [default: 0]
+       --read_set or -rs <INT>  read set of minimum number of reads (1: 2,3,4,5,6,7,8,9,10,12; 2: 2,3,5,7,9,11,13,15,17,19,30,40) [default: 1]
+       --sd_ins or -sdi <INT>   maximum allowable length of INS breakpoints [default: 1000]
+       --eval_gt or -eg         determine genotype accuracy for each SV type with the Sim-A data [default: false]
+       --eval_bp or -eb         determine breakpoint and SV size accuracy for each SV type with the Sim-A data [default: false]
+       --ins or -i              evaluate accuracy for INSs with called insertion size [default: false]
+       --in_y or -y             include chrY [default: false]
+       --help or -h             output help message
+
+
+(c) Reporting precision and recall of overlap SV calls from pair(s) of tools
+
+scripts/evaluate_SV_overlap_calls.pl -t <tool:RSS list>		# RSS: minimum number of reads supporting an SV
+
+[Example]
+
+# For overlap calls of NA12878 from BreakDancer-DELLY, BreakDancer-Manta, DELLY-Manta pairs
+
+scripts/evaluate_SV_overlap_calls.pl -r N -t BreakDancer:4 DELLY:3 Manta:3 -p BD-DELLY-Manta-overlap
+
+# For overlap calls of NA12878 from BreakDancer-DELLY, BreakDancer-Manta, DELLY-Manta pairs, integrating trio data
+
+scripts/evaluate_SV_overlap_calls.pl -r N -t BreakDancer:4 DELLY:3 Manta:3 -pv BreakDancer.parent1.vcf BreakDancer.parent2.vcf DELLY.parent1.vcf DELLY.parent2.vcf Manta.parent1.vcf Manta.prent2.vcf -p BD-DELLY-Manta-overlap-trio
+
+# For outputting vcf file(s) for overlap calls of NA12878 for each combination of tool pairs
+
+scripts/evaluate_SV_overlap_calls.pl -r N -t BreakDancer:4 DELLY:3 Manta:3 -p BD-DELLY-Manta-overlap -vcf
+
+(In this case, three vcf files showing overlapped calls between each combination of the three algorithms. In each vcf file, true positive calls that matched the reference SV data and false positive calls are labelled with 'TP' and 'FP', respectively, at the strat of each line.)
+
+
+[Options]
+
+       --ref or -r <STR>        reference SV type [A|N]
+       --tools or -t <STR>      list of tool:read (e.g., Pindel:3 Lumpy:5)
+       --sv_type or -st <STR>   SV type (ALL|DEL|DUP|INS|INV|TRA) [default: ALL]
+       --sv_size or -ss <STR>   SV size, SS, S, M, L, Lo, or ALL, SS: 30-100 bp, S: 50-1000 bp, M: 1000-100,000 bp, Lo: 500-2,000,000 bp, L: 100,000-2,000,000 bp [default: ALL]
+       --min_size or -s <INT>   minimum size (bp) of SV [default: 50]
+       --var_sd or -vsd <INT>   standard deviation of break points [default: 125]
+       --ins_sd or -isd <INT>   standard deviation of break points for insertions [default: 200]
+       --read_len or -rl <INT>  read length [default: 125]
+       --ovl_rate1 or -or1 <FLOAT> minimum overlap rate between SV-1 and SV-2 (except INSs) from 2 call sets [default: 0.6]
+       --dir or -d <STR>        directory of input vcf files [default: ./]
+       --parent_vcf or -pv <STR> list of parent vcf files (e.g., Pindel.mother.vcf Pindel.father.vcf Lumpy.mother.vcf Lumpy.father.vcf) [either specify -pd or -pv when using trio data]
+       --parent_dir or -p <STR> directory containing parent vcf files (should not include child vcf files in this directory)
+       --in_y or -y             include chrY [default: false]
+       --prefix or -p <STR>     prefix of output
+       --vcf_out or -vcf        output vcf file for overlapping calls between tool pairs [default: false]
+       --help or -h             output help message
+
+
+
+[2] Simulate MEI/NUMT/VEI diploid genomes (optimized for chr17 by default)
+
+All the scripts introduce user-defined rates of artificial SNPs and 1- to 6-bp indels, in addition to MEIs, NUMTs, or VEIs, randomly into a reference genome.
+
+(a) MEI simulator
+
+The generate_sim_genome_MEI.pl script introduce user-defined numbers of AluY, LINE1, SVA, and HERVK mobile elements randomly into a reference genome.
+The MEI sequences to be introduced by default are derived from AluY, LINE1, SVA, and HERVK sequences from the hg19 chr1 (Alu_chr1_mi90mc10.fa, L1_chr1_mi90mc10.fa, SVA_chr1_mi90mc10.fa, and HERVK_chr1_mi90mc10.fa in the Simulated_data_resource folder), which had been obtained by searching using BLAST with min_ident: 90%, min_qcov: 10% for L1 and HERVK, 50% for SVA, and 70% for AluY.
+The MEI site to be introduced can be excluded from predefined ME regions (hs37_chr17_rmsk_MEI.bed for chr17, by default).
+
+scripts/generate_sim_genome_MEI.pl [options] -r <reference file> -p <prefix of output files>
+
+[Example]
+
+scripts/generate_sim_genome_MEI.pl -r chr17.fa -p Sim-MEI -s 0.01 -i 0.002 -an 200 -ln 100 -sn 20 -hn 10 -ht 2
+
+
+[Options]
+
+   --ref or -r <STR>          reference fasta file
+   --pref or -p <STR>         prefix of outputfiles [default: out]
+   --al_fa or -af <STR>       fasta file of blast-searched Alu library to be introduced [default: Alu_chr1_mi90mc10.fa]
+   --l1_fa or -lf <STR>       fasta file of blast-searched L1 library to be introduced [default: L1_chr1_mi90mc10.fa]
+   --sv_fa or -sf <STR>       fasta file of blast-searched SVA library to be introduced [default: SVA_chr1_mi90mc10.fa]
+   --he_fa or -hf <STR>       fasta file of blast-searched HERVK library to be introduced [default: HERVK_chr1_mi90mc10.fa]
+   --me_bed or -mb <STR>      bed file of mobile elements [i.e., Alu, L1, SVA, and HERVK] defined for the hs37 reference (optional) [default: hs37_chr17_rmsk_MEI.bed]
+   --snp or -s <FLOAT>        genomic mutation rate for SNPs [default: 0.01]
+   --indel or -i <FLOAT>      genomic mutation rate for indels [default: 0.002]
+   --alu_num or -an <INT>     number of introducing Alu [default: 300]
+   --l1_num or -ln <INT>      number of introducing LINE1 [default: 70]
+   --sva_num or -sn <INT>     number of introducing SVA [default: 20]
+   --her_num or -hn <INT>     number of introducing HERVK [default: 20]
+   --het_rate or -ht <FLOAT>  hetero to homo ratio of introducing variants [default: 2]
+   --help or -h               output help message
+
+
+
+(b) NUMT simulator
+
+The NUMT sequences to be introduced by default are from libraries of defined Numts (BB_NUMT.fasta in the Simulated_data_resource folder) from UCSC Genome Browser (BMC Bioinformatics 13, S15 2012).
+The NUMT site to be introduced can be excluded from predefined ME regions (BB_NUMT.vcf by default).
+
+scripts/generate_sim_genome_NUMT.pl [options] -r <reference file> -p <prefix of output files>
+
+[Example]
+
+scripts/generate_sim_genome_NUMT.pl -r chr17.fa -p Sim-NUMT -s 0.01 -i 0.002 -nn 100 -ms 150 -ht 2
+
+
+[Options]
+
+   --ref or -r <STR>          reference fasta file
+   --pref or -p <STR>         prefix of outputfiles [default: out]
+   --nm_fa or -nf <STR>       fasta file of defined NUMT sequences [default: BB_NUMT.fasta]
+   --nm_vcf or -nv <STR>      vcf file of NUMTs defined for the hs37 reference [default: BB_NUMT.vcf]
+   --snp or -s <FLOAT>        genomic mutation rate for SNPs [default: 0.01]
+   --indel or -i <FLOAT>      genomic mutation rate for indels [default: 0.002]
+   --numt_num or -nn <INT>    number of introducing NUMTs [default: 200]
+   --min_size or -ms <INT>    minimum size of introducing NUMTs [default: 100];
+   --het_rate or -ht <FLOAT>  hetero to homo ratio of introducing variants [default: 2]
+   --help or -h               output help message
+
+
+
+(c) VEI simulator
+
+The viral sequences to be introduce by default are from libraries (human_virus_ncbi.rn.fa in the Simulated_data_resource folder) obtained from NCBI (http://www.ncbi.nih.gov/genomes/viruses/).
+
+scripts/generate_sim_genome_VEI.pl [options] -r <reference file> -p <prefix of output files>
+
+[Example]
+
+scripts/generate_sim_genome_VEI.pl -r chr18.fa -p Sim-VEI -s 0.01 -i 0.002 -vn 100 -mr 0.1 -ht 2
+
+
+[Options]
+
+   --ref or -r <STR>          reference fasta file
+   --pref or -p <STR>         prefix of outputfiles [default: out]
+   --lib or -l <STR>          fasta file of virus sequence library [default: human_virus_ncbi.rn.fa]
+   --virus_list or -vl <STR>  list of virus name to be introduced into reference (e.g., papilloma herpes); all virus sequences in the library are candidates of insertions if not specified
+   --virus_num or -vn <INT>   number of virus segmanets to be introduced [default: 100]
+   --min_len or -ml <INT>     minimum length of virus fragment [default: 500]
+   --max_len or -xl <INT>     maximum length of virus fragment [default: 10000]
+   --mut_rate or -mr <FLOAT>  maximum mutation rate of virus sequence [default: 0.05, which means that 1~5% mutations are introduced into a virus fragment]
+   --snp or -s <FLOAT>        genomic mutation rate for SNPs [default: 0.01]
+   --indel or -i <FLOAT>      genomic mutation rate for indels [default: 0.002]
+   --het_rate or -ht <FLOAT>  hetero to homo ratio of introducing variants [default: 2]
+   --help or -h               output help message
+
+
+
+[3] Simulated data used in our study (Kosugi et al., Comprehensive evaluation of structural variation callers for whole genome sequencing.)
+
+(a) Sim-A
+
+Simulated diploid genome: Simulated_data_in_our_study/Sim-A/Sim-A.diploid.fa.gz
+Simulated SVs in the genomes: Simulated_data_in_our_study/Sim-A/Sim-A.SV.vcf
+(3,530 DELs, 1,656 DUPs, 2,819 INSs, and 309 INVs (4,853 heterozygous SVs) had been introduced into the Sim-A diploid genome.)
+
+(b) Sim-MEI
+
+Simulated diploid genome: Simulated_data_in_our_study/Sim-MEI/Sim-MEI.chr17.diploid.fa.gz
+Simulated SVs in the genomes: Simulated_data_in_our_study/Sim-MEI/Sim-MEI.chr17.vcf
+(651 MEIs (429 heterozygous MEIs) had been introduced into the Sim-MEI diploid chr17 genome.)
+
+(c) Sim-NUMT
+
+Simulated diploid genome: Simulated_data_in_our_study/Sim-NUMT/Sim-NUMT.chr17.diploid.fa.gz
+Simulated SVs in the genomes: Simulated_data_in_our_study/Sim-NUMT/Sim-NUMT.chr17.vcf
+(132 NUMTs (132 heterozygous NUMTs) had been introduced into the Sim-NUMT diploid chr17 genome.)
+
+(d) Sim-VEI
+
+Simulated diploid genome: Simulated_data_in_our_study/Sim-VEI/Sim-VEI.chr17.diploid.fa.gz
+Simulated SVs in the genomes: Simulated_data_in_our_study/Sim-VEI/Sim-VEI.chr17.vcf
+(100 VEIs (64 heterozygous VEIs) had been introduced into the Sim-VEI diploid chr17 genome.)
+
+
+## Simulate paired-end reads using the ART simulator
+
+The ART simulator is available at .
+
+(For generating paired-end reads with the Sim-A diploid genome, Sim-A.diploid.fa)
+# The paired-end reads have 125 bp in length, 500 bp of insert size, 100 bp of insert size SD, and 30x coverage.
+# $ART_DIR: a directory containing ART executables.
+
+$ART_DIR/art_illumina -sam -i Sim-A.diploid.fa -l 125 -f 15 -m 500 -s 100 -o Sim-A_30x -p -1 $ART_DIR/Illumina_profiles/HiSeq2500L125R1.txt -2 $ART_DIR/Illumina_profiles/HiSeq2500L125R2.txt
+
+
+

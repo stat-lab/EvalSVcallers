@@ -22,7 +22,7 @@ foreach my $file (@ARGV){
         my $pos = $line[1];
         my $ref = $line[3];
         my $type = $1 if ($line[7] =~ /TYPE=(.+?);/);
-        if ($type eq 'AL'){
+        if ($type eq 'ALU'){
         $type = 'ALU';
         }
         elsif ($type eq 'SV'){

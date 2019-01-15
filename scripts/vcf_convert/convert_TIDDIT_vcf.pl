@@ -16,9 +16,11 @@ while (my $line = <FILE>){
     next if ($chr !~ /^\d+$|[XY]/);
     my $pos = $line[1];
     my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
-	next if ($type !~ /DEL|DUP|INV/);
+    $type = 'DUP' if ($type eq 'TDUP');
+	next if ($type !~ /DEL|^DUP$|INV/);
 	my $end = $1 if ($line[7] =~ /END=(\d+)/);
 	my $len = $end - $pos + 1;
+    next if ($type eq 'DUP') and ($len < 50);
 	my $reads = 0;
     $reads = $1 if ($line[7] =~ /LTE=(\d+)/);
 	$reads = 10 if ($reads == 0);
