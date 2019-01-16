@@ -298,7 +298,7 @@ while (my $line = <FILE>){
         next;
     }
     my $GT = 'HM';
-    $GT = 'HT' if ($line[7] =~ /HT:/);
+    $GT = 'HT' if ($line[7] =~ /HT/);
     ${${$ref{$type2}}{$chr}}{$pos} = $svlen;
     ${${$refGT{$type2}}{$chr}}{$pos} = $GT if ($ref_sv eq $ref_sv_simA);
     ${${$ref_info{$type2}}{$chr}}{$pos} = $line[7];
