@@ -18,6 +18,8 @@ my $ref_numt = "$script_path/../Simulated_data/Sim-NUMT.chr17.vcf";
 
 my $gap_bed = "$script_path/../Ref_SV/gap.bed";
 
+my $region_bed = '';
+
 my $var_parent1 = '';
 my $var_parent2 = '';
 
@@ -57,6 +59,7 @@ my $mei_sd = 125;
 my $min_ctx = 20000;
 
 my $min_overlap_ratio = 0.5;
+my $min_overlap = 0.5;
 
 my $min_qual = 90;
 my $min_del_qual = 0;
@@ -77,6 +80,7 @@ GetOptions(
     'parent1|p1=s' => \$var_parent1,
     'parent2|p2=s' => \$var_parent2,
     'sv_type|st=s' => \$sv_type,
+    'region_bed|rb=s' => \$region_bed,
     'chr|c=s' => \$target_chr,
     'len|l=i' => \$min_sv_len,
     'xlen|xl=i' => \$max_sv_len,
@@ -84,7 +88,8 @@ GetOptions(
     'ref_xlen|rxl=i' => \$max_ref_len,
     'min_read|mr=i' => \$min_reads,
     'read_set|rs=i' => \$read_set,
-    'sd_ins|sdi=i' => \$ins_sd,
+    'min_ovl|mo=f' => \$min_overlap,
+    'min_ins|mins=i' => \$ins_sd,
     'eval_gt|eg' => \$eval_gt,
     'eval_bp|eb' => \$eval_bp,
     'ins|i' => \$ins_eval,
@@ -104,20 +109,22 @@ $var_base = $1 if ($var_base =~ /(.+)\./);
   evaluate_SV_callers.pl <option> -p1 <parent1 vcf file> -p2 <parent2 vcf file> [vcf file] (for integrating trio data)
 
   Options:
-   --ref or -r <STR>        reference SV type (A|N) [default: N]
+   --ref or -r <STR>        reference SV type (A|N), A: Sim-A, N: NA12878 [default: N]
    --sv_type or -st <STR>   SV type (ALL|DEL|DUP|INS|INV|TRA) if specifying multi type, e.g., DEL,INS [default: ALL]
    --parent1 or -p1 <STR>   SV vcf file of parent1 (optional)
    --parent2 or -p2 <STR>   SV vcf file of parent2 (optional)
    --ref2 or -r2 <STR>	    reference SV vcf file (optional)
    --ref_dir or -rd <STR>   directory containing reference SV vcf files (optional)
-   --chr or -c <STR>        target chromosome to be analyzed [all or chr name(s), e.g., 4,5,6,X]
+   --chr or -c <STR>        target chromosome to be analyzed [all or chr name(s), e.g., 4,5,6,X; default: all]
+   --region_bed or -rb <STR> bed file indicating the regions to be analyzed (optional)
    --len or -l <INT>        minimum size (bp) of SV [default: 30]
    --xlen or -xl <INT>      maximum size of SV [default: 1000000]
    --ref_len or -rl <INT>   minimum size of reference SV [default: 30]
    --ref_xlen or -rxl <INT> maximum size of reference SV [default: 1000000]
    --min_read or -mr <INT>  minimum number of reads supporting an SV [default: 0]
    --read_set or -rs <INT>  read set of minimum number of reads (1: 2,3,4,5,6,7,8,9,10,12; 2: 2,3,5,7,9,11,13,15,17,19,30,40) [default: 1]
-   --sd_ins or -sdi <INT>   maximum allowable length of INS breakpoints [default: 1000]
+   --min_ovl or -mo <FLOAT> minimum rate of reciprocal overlap between called non-INS-SVs and reference non-INS-SVs [default: 0.5 for NA12878, 0.8 for Sim-A > 1Kb SVs, 0.6 for Sim-A <= 1 Kb SVs]
+   --min_ins or -mins <INT> maximum allowable length between the breakpoints of called INSs and reference INSs [default: 200]
    --eval_gt or -eg         determine genotype accuracy for each SV type with the Sim-A data [default: false]
    --eval_bp or -eb         determine breakpoint and SV size accuracy for each SV type with the Sim-A data [default: false]
    --ins or -i              evaluate accuracy for INSs with called insertion size [default: false]
@@ -132,8 +139,6 @@ if ((($eval_gt == 1) or ($eval_bp == 1)) and ($ref_sv ne 'A')){
 
 my $parent_flag = 0;
 $parent_flag = 1 if ($var_parent1 ne '') or ($var_parent2 ne '');
-
-$min_overlap_ratio = 0.5 if (uc $ref_sv eq 'N') or (uc $ref_sv eq 'P');
 
 @min_reads = (2, 3, 5, 7, 9, 11, 13, 15, 17, 19, 30, 40) if ($read_set == 2);
 @min_reads = (2, 3, 5, 7, 9, 11, 13, 15, 17, 19) if ($read_set == 3);
@@ -155,7 +160,12 @@ elsif ($child_vcf_base =~ /SVfinder/){
     $min_reads_parent{'INV'} = 5;
 }
 
-$min_overlap_ratio = 0.5 if (uc $ref_sv eq 'N');
+if ($min_overlap == 0){
+    $min_overlap_ratio = 0.5 if (uc $ref_sv eq 'N');
+}
+else{
+    $min_overlap_ratio = $min_overlap;
+}
 
 @min_reads = (2, 3, 5, 7, 9, 11, 13, 15, 17, 19, 30, 40) if ($read_set == 2);
 
@@ -238,6 +248,9 @@ my %ref_info;
 
 my %gap;
 
+my %region;
+my $total_region = 0;
+
 open (FILE, $gap_bed) or die "$gap_bed is not found: $!\n";
 while (my $line = <FILE>){
     chomp $line;
@@ -248,6 +261,19 @@ while (my $line = <FILE>){
     ${$gap{$chr}}{$pos} = $end;
 }
 close (FILE);
+
+if ($region_bed ne ''){
+    open (FILE, $region_bed) or die "$region_bed is not found: $!\n";
+    while (my $line = <FILE>){
+        chomp $line;
+        next if ($line =~ /^#|^$/);
+        my ($chr, $start, $end) = split (/\t/, $line);
+        ${$region{$chr}}{$start} = $end;
+        $total_region += $end - $start + 1;
+    }
+    close (FILE);
+    print STDERR "Total genomic size to be analyzed: $total_region\n";
+}
 
 open (FILE, $ref_sv) or die "$ref_sv is not found: $!\n";
 while (my $line = <FILE>){
@@ -297,6 +323,38 @@ while (my $line = <FILE>){
     if ($gap_overlap == 1){
         next;
     }
+    
+    if ($total_region > 0){
+        my $region_overlap = 0;
+        if (exists $region{$chr}){
+            foreach my $rpos (sort {$a <=> $b} keys %{$region{$chr}}){
+                my $rend = ${$region{$chr}}{$rpos};
+                if (($pos >= $rpos) and ($pos <= $rend)){
+                    if ($type eq 'INS'){
+                        $region_overlap = 1;
+                        last;
+                    }
+                    else{
+                        if ($rend - $pos + 1 >= $svlen * 0.5){
+                            $region_overlap = 1;
+                            last;
+                        }
+                    }
+                }
+                elsif (($type ne 'INS') and ($rpos >= $pos) and ($rpos <= $end)){
+                    if ($end - $rpos + 1 >= $svlen * 0.5){
+                        $region_overlap = 1;
+                        last;
+                    }
+                }
+                last if ($rpos > $end);
+            }
+        }
+        if ($region_overlap == 0){
+            next;
+        }
+    }
+    
     my $GT = 'HM';
     $GT = 'HT' if ($line[7] =~ /HT/);
     ${${$ref{$type2}}{$chr}}{$pos} = $svlen;
@@ -392,16 +450,6 @@ my %match_ins_num;
 my %match_inv_num;
 my %match_dup_num;
 
-my %match_del_GT;
-my %match_ins_GT;
-my %match_inv_GT;
-my %match_dup_GT;
-
-my %match_del_GTNA;
-my %match_ins_GTNA;
-my %match_inv_GTNA;
-my %match_dup_GTNA;
-
 my %match_GT;
 my %match_GTNA;
 
@@ -475,6 +523,36 @@ if ($var_parent1 ne ''){
         my $reads = $1 if ($line[7] =~ /READS=(\d+)/);
         next if ($reads < $min_reads_parent);
         next if  (exists $min_reads_parent{$type}) and ($reads < $min_reads_parent{$type});
+        if ($total_region > 0){
+            my $region_overlap = 0;
+            if (exists $region{$chr}){
+                foreach my $rpos (sort {$a <=> $b} keys %{$region{$chr}}){
+                    my $rend = ${$region{$chr}}{$rpos};
+                    if (($pos >= $rpos) and ($pos <= $rend)){
+                        if ($type eq 'INS'){
+                            $region_overlap = 1;
+                            last;
+                        }
+                        else{
+                            if ($rend - $pos + 1 >= $len * 0.5){
+                                $region_overlap = 1;
+                                last;
+                            }
+                        }
+                    }
+                    elsif (($type ne 'INS') and ($rpos >= $pos) and ($rpos <= $end)){
+                        if ($end - $rpos + 1 >= $len * 0.5){
+                            $region_overlap = 1;
+                            last;
+                        }
+                    }
+                    last if ($rpos > $end);
+                }
+            }
+            if ($region_overlap == 0){
+                next;
+            }
+        }
         ${${$parent1{$type}}{$chr}}{$pos} = $len;
     }
     close (FILE);
@@ -522,6 +600,36 @@ if ($var_parent2 ne ''){
         my $reads = $1 if ($line[7] =~ /READS=(\d+)/);
         next if ($reads < $min_reads_parent);
         next if  (exists $min_reads_parent{$type}) and ($reads < $min_reads_parent{$type});
+        if ($total_region > 0){
+            my $region_overlap = 0;
+            if (exists $region{$chr}){
+                foreach my $rpos (sort {$a <=> $b} keys %{$region{$chr}}){
+                    my $rend = ${$region{$chr}}{$rpos};
+                    if (($pos >= $rpos) and ($pos <= $rend)){
+                        if ($type eq 'INS'){
+                            $region_overlap = 1;
+                            last;
+                        }
+                        else{
+                            if ($rend - $pos + 1 >= $len * 0.5){
+                                $region_overlap = 1;
+                                last;
+                            }
+                        }
+                    }
+                    elsif (($type ne 'INS') and ($rpos >= $pos) and ($rpos <= $end)){
+                        if ($end - $rpos + 1 >= $len * 0.5){
+                            $region_overlap = 1;
+                            last;
+                        }
+                    }
+                    last if ($rpos > $end);
+                }
+            }
+            if ($region_overlap == 0){
+                next;
+            }
+        }
         ${${$parent2{$type}}{$chr}}{$pos} = $len;
     }
     close (FILE);
@@ -602,6 +710,36 @@ while (my $line = <FILE>){
         last if ($gstart > $end);
     }
     next if ($gap_overlap == 1);
+    if ($total_region > 0){
+        my $region_overlap = 0;
+        if (exists $region{$chr}){
+            foreach my $rpos (sort {$a <=> $b} keys %{$region{$chr}}){
+                my $rend = ${$region{$chr}}{$rpos};
+                if (($pos >= $rpos) and ($pos <= $rend)){
+                    if ($type eq 'INS'){
+                        $region_overlap = 1;
+                        last;
+                    }
+                    else{
+                        if ($rend - $pos + 1 >= $len * 0.5){
+                            $region_overlap = 1;
+                            last;
+                        }
+                    }
+                }
+                elsif (($type ne 'INS') and ($rpos >= $pos) and ($rpos <= $end)){
+                    if ($end - $rpos + 1 >= $len * 0.5){
+                        $region_overlap = 1;
+                        last;
+                    }
+                }
+                last if ($rpos > $end);
+            }
+        }
+        if ($region_overlap == 0){
+            next;
+        }
+    }
     my $size = 'S';
     if ($type ne 'INS'){
         if ($len <= 1000){
@@ -657,7 +795,7 @@ while (my $line = <FILE>){
         }
     }
     my $min_overlap_ratio2 = $min_overlap_ratio;
-    if ($ref_sv_tag eq 'A'){
+    if (($ref_sv_tag eq 'A') and ($min_overlap == 0)){
         $min_overlap_ratio2 = 0.8  if ($size eq 'M') or ($size eq 'L');
         $min_overlap_ratio2 = 0.6  if ($size eq 'SS') or ($size eq 'S');
     }

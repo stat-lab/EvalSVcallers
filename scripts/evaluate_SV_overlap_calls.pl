@@ -34,6 +34,9 @@ my $min_overlap_ratio = 0.6;        # for overlap between SV call sets
 
 my $min_overlap_ratio2 = 0.5;       # for overlap with ref SVs
 
+my $min_overlap = 0;
+my $min_overlap2 = 0;
+
 my $help;
 
 my $ref_sv = 'N';
@@ -73,9 +76,9 @@ GetOptions(
     'parent_dir|pd=s' => \$parent_dir,
     'sv_type|st=s' => \$sv_type,
     'sv_size|ss=s' => \$sv_size,
-    'var_sd|vsd=i' => \$var_sd,
-    'ins_sd|isd=i' => \$ins_sd,
-    'ovl_rate1|or1=i' => \$min_overlap_ratio,
+    'min_ins|mins=i' => \$ins_sd,
+    'min_ovl|mo=f' => \$min_overlap,
+    'min_ovl2|mo2=f' => \$min_overlap2,
     'read_len|rl=i' => \$read_length,
     'dir|d=s' => \$input_dir,
     'prefix|p=s' => \$out_prefix,
@@ -91,15 +94,16 @@ pod2usage(-verbose => 0) if $help;
   evaluate_SV_overlap_calls.pl <option> [vcf file] 
 
   Options:
-   --ref or -r <STR>        reference SV type [A|N]
+   --ref or -r <STR>        reference SV type  (A|N), A: Sim-A, N: NA12878 [default: N]
    --tools or -t <STR>      list of tool:read (e.g., Pindel:3 Lumpy:5)
    --sv_type or -st <STR>   SV type (ALL|DEL|DUP|INS|INV|TRA) [default: ALL]
    --sv_size or -ss <STR>   SV size, SS, S, M, L, Lo, or ALL, SS: 30-100 bp, S: 50-1000 bp, M: 1000-100,000 bp, Lo: 500-2,000,000 bp, L: 100,000-2,000,000 bp [default: ALL]
    --min_size or -s <INT>   minimum size (bp) of SV [default: 50]
-   --var_sd or -vsd <INT>   standard deviation of break points [default: 125]
-   --ins_sd or -isd <INT>   standard deviation of break points for insertions [default: 200]
+   --chr or -c <STR>        target chromosome to be analyzed [all or chr name(s), e.g., 4,5,6,X; default: all]
+   --min_ovl or -mo <FLOAT> minimum rate of reciprocal overlap between called non-INS-SVs and reference non-INS-SVs [default: 0.5 for NA12878, 0.8 for Sim-A > 1Kb SVs, 0.6 for Sim-A <= 1 Kb SVs]
+   --min_ovl2 or -mo2 <FLOAT> minimum rate of reciprocal overlap between non-INS-SVs from 2 datasets [default: 0.6]
+   --min_ins or -mins <INT> maximum allowable length between overlap INS breakpoints [default: 200]
    --read_len or -rl <INT>  read length [default: 125]
-   --ovl_rate1 or -or1 <FLOAT> minimum overlap rate between SV-1 and SV-2 (except INSs) from 2 call sets [default: 0.6]
    --dir or -d <STR>        directory of input vcf files [default: ./]
    --parent_vcf or -pv <STR> list of parent vcf files (e.g., Pindel.mother.vcf Pindel.father.vcf Lumpy.mother.vcf Lumpy.father.vcf) [either specify -pd or -pv when using trio data]
    --parent_dir or -pd <STR> directory containing parent vcf files (should not include child vcf files in this directory)
@@ -125,8 +129,21 @@ elsif ($ref_sv eq 'N'){
 
 my $min_overlap_ratio3 = 0.4;           # for overlap between parent-child SVs
 
-$min_overlap_ratio2 = 0.6 if ($ref_type eq 'A') and (($sv_size eq 'SS') or ($sv_size eq 'S'));
-$min_overlap_ratio2 = 0.8 if ($ref_type eq 'A') and (($sv_size eq 'M') or ($sv_size eq 'L') or ($sv_size eq 'ALL'));
+if ($min_overlap2 == 0){
+    $min_overlap_ratio2 = 0.5 if ($ref_type eq 'N');
+    $min_overlap_ratio2 = 0.6 if ($ref_type eq 'A') and (($sv_size eq 'SS') or ($sv_size eq 'S'));
+    $min_overlap_ratio2 = 0.8 if ($ref_type eq 'A') and (($sv_size eq 'M') or ($sv_size eq 'L') or ($sv_size eq 'ALL'));
+}
+else{
+    $min_overlap_ratio2 = $min_overlap2;
+}
+
+if ($min_overlap == 0){
+    $min_overlap_ratio = 0.6;
+}
+else{
+    $min_overlap_ratio = $min_overlap;
+}
 
 my %dup_tool = ('AS-GENSENG' => 1, 'CNVnator' => 1, 'Control-FREEC' => 1, 'Delly' => 1, 'ERDS' => 1, 'forestSV' => 1, 'inGAP' => 1, 'laSV' => 1, 'Lumpy' => 1, 'Manta' => 1, 'Meerkat' => 1, 'metaSV' => 1, 'OncoSNP-Seq' => 1,
 		'Pindel' => 1, 'RAPTR' => 1, 'readDepth' => 1, 'Sniffles' => 1, 'SoftSearch' => 1, 'SoftSV' => 1, 'SVDetect' => 1, 'Ulysses' => 1, 'TIDDIT' => 1, 'PennCNV-Seq' => 1, 'BICseq2' => 1, 'SVelter' => 1, 'Wham' => 1, 'GRIDSS' => 1);
