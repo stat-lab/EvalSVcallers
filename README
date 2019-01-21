@@ -48,20 +48,22 @@ scripts/evaluate_SV_callers.pl -r N Pindel.NA78.vcf -p1 Pindel.parent1.vcf -p2 P
 
 [Options]
 
-       --ref or -r <STR>        reference SV type (A|N) [default: A]
+       --ref or -r <STR>        reference SV type (A|N), A: Sim-A, N: NA12878 [default: N]
        --sv_type or -st <STR>   SV type (ALL|DEL|DUP|INS|INV|TRA) if specifying multi type, e.g., DEL,INS [default: ALL]
        --parent1 or -p1 <STR>   SV vcf file of parent1 (optional)
        --parent2 or -p2 <STR>   SV vcf file of parent2 (optional)
        --ref2 or -r2 <STR>      reference SV vcf file (optional)
        --ref_dir or -rd <STR>   directory containing reference SV vcf files (optional)
-       --chr or -c <STR>        target chromosome to be analyzed [all or chr name(s), e.g., 4,5,6,X]
+       --chr or -c <STR>        target chromosome to be analyzed [all or chr name(s), e.g., 4,5,6,X; default: all]
+       --region_bed or -rb <STR> bed file indicating the regions to be analyzed (optional)
        --len or -l <INT>        minimum size (bp) of SV [default: 30]
        --xlen or -xl <INT>      maximum size of SV [default: 1000000]
        --ref_len or -rl <INT>   minimum size of reference SV [default: 30]
        --ref_xlen or -rxl <INT> maximum size of reference SV [default: 1000000]
        --min_read or -mr <INT>  minimum number of reads supporting an SV [default: 0]
        --read_set or -rs <INT>  read set of minimum number of reads (1: 2,3,4,5,6,7,8,9,10,12; 2: 2,3,5,7,9,11,13,15,17,19,30,40) [default: 1]
-       --sd_ins or -sdi <INT>   maximum allowable length of INS breakpoints [default: 1000]
+       --min_ovl or -mo <FLOAT> minimum rate of reciprocal overlap between called non-INS-SVs and reference non-INS-SVs [default: 0.5 for NA12878, 0.8 for Sim-A > 1Kb SVs, 0.6 for Sim-A <= 1 Kb SVs]
+       --min_ins or -mins <INT> maximum allowable length between the breakpoints of called INSs and reference INSs [default: 200]
        --eval_gt or -eg         determine genotype accuracy for each SV type with the Sim-A data [default: false]
        --eval_bp or -eb         determine breakpoint and SV size accuracy for each SV type with the Sim-A data [default: false]
        --ins or -i              evaluate accuracy for INSs with called insertion size [default: false]
@@ -92,15 +94,16 @@ scripts/evaluate_SV_overlap_calls.pl -r N -t BreakDancer:4 DELLY:3 Manta:3 -p BD
 
 [Options]
 
-       --ref or -r <STR>        reference SV type [A|N]
+       --ref or -r <STR>        reference SV type (A|N), A: Sim-A, N: NA12878 [default: N]
        --tools or -t <STR>      list of tool:read (e.g., Pindel:3 Lumpy:5)
        --sv_type or -st <STR>   SV type (ALL|DEL|DUP|INS|INV|TRA) [default: ALL]
        --sv_size or -ss <STR>   SV size, SS, S, M, L, Lo, or ALL, SS: 30-100 bp, S: 50-1000 bp, M: 1000-100,000 bp, Lo: 500-2,000,000 bp, L: 100,000-2,000,000 bp [default: ALL]
        --min_size or -s <INT>   minimum size (bp) of SV [default: 50]
-       --var_sd or -vsd <INT>   standard deviation of break points [default: 125]
-       --ins_sd or -isd <INT>   standard deviation of break points for insertions [default: 200]
+       --chr or -c <STR>        target chromosome to be analyzed [all or chr name(s), e.g., 4,5,6,X; default: all]
        --read_len or -rl <INT>  read length [default: 125]
-       --ovl_rate1 or -or1 <FLOAT> minimum overlap rate between SV-1 and SV-2 (except INSs) from 2 call sets [default: 0.6]
+       --min_ovl or -mo <FLOAT> minimum rate of reciprocal overlap between called non-INS-SVs and reference non-INS-SVs [default: 0.5 for NA12878, 0.8 for Sim-A > 1Kb SVs, 0.6 for Sim-A <= 1 Kb SVs]
+       --min_ovl2 or -mo2 <FLOAT> minimum rate of reciprocal overlap between non-INS-SVs from 2 datasets [default: 0.6]
+       --min_ins or -mins <INT> maximum allowable length between overlap INS breakpoints [default: 200]
        --dir or -d <STR>        directory of input vcf files [default: ./]
        --parent_vcf or -pv <STR> list of parent vcf files (e.g., Pindel.mother.vcf Pindel.father.vcf Lumpy.mother.vcf Lumpy.father.vcf) [either specify -pd or -pv when using trio data]
        --parent_dir or -p <STR> directory containing parent vcf files (should not include child vcf files in this directory)
