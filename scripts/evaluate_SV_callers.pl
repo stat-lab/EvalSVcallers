@@ -42,13 +42,13 @@ my $target_chr = 'all';
 
 my $include_y = 0;
 
-my $min_sv_len = 30;
+my $min_sv_len = 50;
 
-my $max_sv_len = 10000000;
+my $max_sv_len = 2000000;
 
 my $min_ref_len = 30;
 
-my $max_ref_len = 1200000;
+my $max_ref_len = 2000000;
 
 my $var_sd = 125;
 #my $ins_sd = 1000;
@@ -72,6 +72,8 @@ my $ins_eval = 0;
 my $min_reads_parent = 2;
 my %min_reads_parent;
 
+my $substract_ME = 0;
+
 my $help;
 
 GetOptions(
@@ -94,6 +96,7 @@ GetOptions(
     'eval_bp|eb' => \$eval_bp,
     'ins|i' => \$ins_eval,
     'in_y|y' => \$include_y,
+    'sub_me|sm' => \$substract_ME,
     'help' => \$help
 ) or pod2usage(-verbose => 0);
 pod2usage(-verbose => 0) if $help;
@@ -117,10 +120,10 @@ $var_base = $1 if ($var_base =~ /(.+)\./);
    --ref_dir or -rd <STR>   directory containing reference SV vcf files (optional)
    --chr or -c <STR>        target chromosome to be analyzed [all or chr name(s), e.g., 4,5,6,X; default: all]
    --region_bed or -rb <STR> bed file indicating the regions to be analyzed (optional)
-   --len or -l <INT>        minimum size (bp) of SV [default: 30]
-   --xlen or -xl <INT>      maximum size of SV [default: 1000000]
+   --len or -l <INT>        minimum size (bp) of SV [default: 50]
+   --xlen or -xl <INT>      maximum size of SV [default: 2000000]
    --ref_len or -rl <INT>   minimum size of reference SV [default: 30]
-   --ref_xlen or -rxl <INT> maximum size of reference SV [default: 1000000]
+   --ref_xlen or -rxl <INT> maximum size of reference SV [default: 2000000]
    --min_read or -mr <INT>  minimum number of reads supporting an SV [default: 0]
    --read_set or -rs <INT>  read set of minimum number of reads (1: 2,3,4,5,6,7,8,9,10,12; 2: 2,3,5,7,9,11,13,15,17,19,30,40) [default: 1]
    --min_ovl or -mo <FLOAT> minimum rate of reciprocal overlap between called non-INS-SVs and reference non-INS-SVs [default: 0.5 for NA12878, 0.8 for Sim-A > 1Kb SVs, 0.6 for Sim-A <= 1 Kb SVs]
@@ -129,6 +132,7 @@ $var_base = $1 if ($var_base =~ /(.+)\./);
    --eval_bp or -eb         determine breakpoint and SV size accuracy for each SV type with the Sim-A data [default: false]
    --ins or -i              evaluate accuracy for INSs with called insertion size [default: false]
    --in_y or -y             include chrY [default: false]
+   --sub_me or -sm          substract Mendelian inheritance errors from true positive calls to calculate precision and recall [default: false]
    --help or -h             output help message
    
 =cut
@@ -785,11 +789,11 @@ while (my $line = <FILE>){
             foreach my $minread (sort {$a <=> $b} @min_reads){
                 if ($reads >= $minread){
                     ${$call_del_num{$size}}{$minread} ++ if ($type eq 'DEL');
-                    ${$call_dup_num{$size}}{$minread} ++ if ($type eq 'DUP') and ($len >= 100);
-                    ${$call_inv_num{$size}}{$minread} ++ if ($type eq 'INV') and ($len >= 100);
-                    ${$call_del_num{'A'}}{$minread} ++ if ($type eq 'DEL') and ($len >= 50);
-                    ${$call_dup_num{'A'}}{$minread} ++ if ($type eq 'DUP') and ($len >= 50);
-                    ${$call_inv_num{'A'}}{$minread} ++ if ($type eq 'INV') and ($len >= 50);
+                    ${$call_dup_num{$size}}{$minread} ++ if ($type eq 'DUP');
+                    ${$call_inv_num{$size}}{$minread} ++ if ($type eq 'INV');
+                    ${$call_del_num{'A'}}{$minread} ++ if ($type eq 'DEL');
+                    ${$call_dup_num{'A'}}{$minread} ++ if ($type eq 'DUP');
+                    ${$call_inv_num{'A'}}{$minread} ++ if ($type eq 'INV');
                 }
             }
         }
@@ -886,7 +890,7 @@ while (my $line = <FILE>){
                 ${${$mendel_err{$type}}{$size}}{$minread} ++ if ($type eq 'DEL') or ($type eq 'DUP');
             }
         }
-        next;
+        next if ($substract_ME == 1);
     }
     
     my $flag = 0;
@@ -1124,12 +1128,12 @@ while (my $line = <FILE>){
             }
             else{
                 if ($reads >= $minread){
-                    ${$match_del_num{'A'}}{$minread} ++ if ($type eq 'DEL') and ($len >= 50);
-                    ${$match_dup_num{'A'}}{$minread} ++ if ($type eq 'DUP') and ($len >= 50);
-                    ${$match_inv_num{'A'}}{$minread} ++ if ($type eq 'INV') and ($len >= 50);
-                    ${$match_dup_num{$size}}{$minread} ++ if ($type eq 'DUP') and ($len >= 100);
+                    ${$match_del_num{'A'}}{$minread} ++ if ($type eq 'DEL');
+                    ${$match_dup_num{'A'}}{$minread} ++ if ($type eq 'DUP');
+                    ${$match_inv_num{'A'}}{$minread} ++ if ($type eq 'INV');
+                    ${$match_dup_num{$size}}{$minread} ++ if ($type eq 'DUP');
                     ${$match_del_num{$size}}{$minread} ++ if ($type eq 'DEL');
-                    ${$match_inv_num{$size}}{$minread} ++ if ($type eq 'INV') and ($len >= 100);
+                    ${$match_inv_num{$size}}{$minread} ++ if ($type eq 'INV');
                     if ($size eq 'SS'){
                         if ($hit_len > 100){
                             ${$recal_del_num{$size}}{$minread} -- if ($type eq 'DEL');
@@ -1228,8 +1232,8 @@ while (my $line = <FILE>){
             }
             elsif ($type eq 'DUP'){
                 if ($reads >= $minread){
-                    ${$nocall_dup_num{'A'}}{$minread} ++ if ($len >= 50);
-                    ${$nocall_dup_num{$size}}{$minread} ++ if ($len >= 100);
+                    ${$nocall_dup_num{'A'}}{$minread} ++;
+                    ${$nocall_dup_num{$size}}{$minread} ++;
                 }
             }
         }
