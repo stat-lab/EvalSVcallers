@@ -1696,7 +1696,6 @@ if ((exists $call_dup_num{'A'}) and ($ref_dup_num > 0)){
     foreach my $read (sort {$a <=> $b} keys %{$match_dup_num{'S'}}){
         my $precis = 0;
         my $call = ${$call_dup_num{'S'}}{$read};
-        $call -= ${$nocall_dup_num{'S'}}{$read} if (exists ${$nocall_dup_num{'S'}}{$read});
         $precis = int (${$match_dup_num{'S'}}{$read} / $call * 1000) / 10 if ($call > 0);
         print "$precis\t";
         print OUT "$precis\t";
@@ -1749,7 +1748,6 @@ if ((exists $call_dup_num{'A'}) and ($ref_dup_num > 0)){
     foreach my $read (sort {$a <=> $b} keys %{$match_dup_num{'M'}}){
         my $precis = 0;
         my $call = ${$call_dup_num{'M'}}{$read};
-        $call -= ${$nocall_dup_num{'M'}}{$read} if (exists ${$nocall_dup_num{'M'}}{$read});
         $precis = int (${$match_dup_num{'M'}}{$read} / $call * 1000) / 10 if ($call > 0);
         print "$precis\t";
         print OUT "$precis\t";
@@ -1802,7 +1800,6 @@ if ((exists $call_dup_num{'A'}) and ($ref_dup_num > 0)){
     foreach my $read (sort {$a <=> $b} keys %{$match_dup_num{'L'}}){
         my $precis = 0;
         my $call = ${$call_dup_num{'L'}}{$read};
-        $call -= ${$nocall_dup_num{'L'}}{$read} if (exists ${$nocall_dup_num{'L'}}{$read});
         $precis = int (${$match_dup_num{'L'}}{$read} / $call * 1000) / 10 if ($call > 0);
         print "$precis\t";
         print OUT "$precis\t";
@@ -1895,7 +1892,7 @@ if ((exists $call_ins_num{3}) and ($ref_ins_num > 0)){
         $dup_ins_hit = ${$nocall_dup_num{'A'}}{$read} if (exists ${$nocall_dup_num{'A'}}{$read});
         my $ins_dup_hit = 0;
         $ins_dup_hit = $nocall_ins_num{$read} if (exists $nocall_ins_num{$read});
-        my $recall = int (($match_ins_num{$read} + $dup_ins_hit) / ($ref_ins_num + $ins_dup_hit) * 1000) / 10;
+        my $recall = int ($match_ins_num{$read} / ($ref_ins_num + $ins_dup_hit) * 1000) / 10;
         print "$recall\t";
         print OUT "$recall\t";
     }
