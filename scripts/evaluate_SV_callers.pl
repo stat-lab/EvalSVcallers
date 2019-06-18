@@ -2034,7 +2034,7 @@ if ((exists $call_inv_num{'A'}) and ($ref_inv_num > 0)){
 	foreach my $read (sort {$a <=> $b} keys %{${$match_GT{$type}}{'A'}}){
             my $matchGT = 0;
 	    $matchGT = ${${$match_GT{$type}}{'A'}}{$read} if (exists ${${$match_GT{$type}}{'A'}}{$read});
-	    my $match = ${$match_del_num{'A'}}{$read};
+	    my $match = ${$match_inv_num{'A'}}{$read};
             my $NA = 0;
 	    $NA = ${${$match_GTNA{$type}}{'A'}}{$read} if (exists ${${$match_GTNA{$type}}{'A'}}{$read});
 	    my $precis = 0;
