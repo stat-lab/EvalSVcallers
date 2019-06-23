@@ -6,6 +6,9 @@ The evaluate_SV_callers.pl script in the script folder outputs precision and rec
 
 The evaluate_SV_overlap_calls.pl script in the script folder outputs precision and recall values of overlap calls between a pair of tools for each SV type and size range It outputs the results for all the combinations of pairs of tools specified with the t option. This can also integrate SV calls with trio data by specifying -pv or -pd option. By specifying the -vcf option, it also outputs vcf file(s) for overlap SV calls for every pairs of tools. 
 
+Kosugi S, Momozawa Y, Liu X, Terao C, Kubo M, Kamatani Y. Comprehensive evaluation of structural variation detection algorithms for whole genome sequencing. Genome Biology 20(1):117 (2019). doi: 10.1186/s13059-019-1720-5.
+
+
 [1] Evaluate SV calls
 
 (a) Converting the output files for SV callers to a vcf format compatible to this analysis
