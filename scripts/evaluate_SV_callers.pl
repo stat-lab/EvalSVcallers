@@ -799,7 +799,7 @@ while (my $line = <FILE>){
         }
     }
     my $min_overlap_ratio2 = $min_overlap_ratio;
-    if (($ref_sv_tag eq 'A') and ($min_overlap == 0)){
+    if (($ref_sv_tag eq 'A') and ($min_overlap == 0.5)){
         $min_overlap_ratio2 = 0.8  if ($size eq 'M') or ($size eq 'L');
         $min_overlap_ratio2 = 0.6  if ($size eq 'SS') or ($size eq 'S');
     }
