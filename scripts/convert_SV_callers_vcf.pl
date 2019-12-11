@@ -32,7 +32,7 @@ pod2usage(-verbose => 0) if $help;
    --len or -l <INT>        minimum size (bp) of SV to be kept [default: 30]
    --xlen or -xl <INT>      maximum size (bp) of SV to be kept [default: 20000000]
    --help or -h             output help message
-   
+
 =cut
 
 if (($tool eq 'PBHoney') and ($class eq 'NGM')){
@@ -44,7 +44,7 @@ elsif ($tool eq 'Mobster'){
 
 my $script_path = $Bin;
 
-my @convert_script = <$script_path/convert_$tool*.pl>;
+my @convert_script = <$script_path/vcf_convert/convert_$tool*.pl>;
 
 if (@convert_script == 0){
     die "TOOL name specified is absent in 69 tools we analyzed or does not match the names:\n";
@@ -79,4 +79,3 @@ foreach my $chr (sort keys %vcf){
         }
     }
 }
-

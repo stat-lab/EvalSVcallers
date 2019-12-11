@@ -10,7 +10,7 @@ while (my $line = <FILE>){
     my @line = split (/\s+/, $line);
     my $chr = $line[0];
     my $pos = $line[1];
-    my $type = $1 if ($line[4] =~ /<(.+)>/);
+    my $type = $1 if ($line[7] =~ /SVTYPE=(.+)/);
     next if ($type eq 'TRA');
     my $len = 0;
     $len = $1 if ($line[7] =~ /SVLEN=(\d+)/);
