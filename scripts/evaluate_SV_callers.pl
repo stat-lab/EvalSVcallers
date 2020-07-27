@@ -1665,7 +1665,7 @@ if ((exists $call_dup_num{'A'}) and ($ref_dup_num > 0)){
 	foreach my $read (sort {$a <=> $b} keys %{${$match_GT{$type}}{'A'}}){
             my $matchGT = 0;
 	    $matchGT = ${${$match_GT{$type}}{'A'}}{$read} if (exists ${${$match_GT{$type}}{'A'}}{$read});
-	    my $match = ${$match_del_num{'A'}}{$read};
+	    my $match = ${$match_dup_num{'A'}}{$read};
             my $NA = 0;
 	    $NA = ${${$match_GTNA{$type}}{'A'}}{$read} if (exists ${${$match_GTNA{$type}}{'A'}}{$read});
 	    my $precis = 0;
@@ -1717,7 +1717,7 @@ if ((exists $call_dup_num{'A'}) and ($ref_dup_num > 0)){
 	foreach my $read (sort {$a <=> $b} keys %{${$match_GT{$type}}{'S'}}){
             my $matchGT = 0;
 	    $matchGT = ${${$match_GT{$type}}{'S'}}{$read} if (exists ${${$match_GT{$type}}{'S'}}{$read});
-	    my $match = ${$match_del_num{'S'}}{$read};
+	    my $match = ${$match_dup_num{'S'}}{$read};
             my $NA = 0;
 	    $NA = ${${$match_GTNA{$type}}{'S'}}{$read} if (exists ${${$match_GTNA{$type}}{'S'}}{$read});
 	    my $precis = 0;
@@ -1769,7 +1769,7 @@ if ((exists $call_dup_num{'A'}) and ($ref_dup_num > 0)){
 	foreach my $read (sort {$a <=> $b} keys %{${$match_GT{$type}}{'M'}}){
             my $matchGT = 0;
 	    $matchGT = ${${$match_GT{$type}}{'M'}}{$read} if (exists ${${$match_GT{$type}}{'M'}}{$read});
-	    my $match = ${$match_del_num{'M'}}{$read};
+	    my $match = ${$match_dup_num{'M'}}{$read};
             my $NA = 0;
 	    $NA = ${${$match_GTNA{$type}}{'M'}}{$read} if (exists ${${$match_GTNA{$type}}{'M'}}{$read});
 	    my $precis = 0;
@@ -1821,7 +1821,7 @@ if ((exists $call_dup_num{'A'}) and ($ref_dup_num > 0)){
 	foreach my $read (sort {$a <=> $b} keys %{${$match_GT{$type}}{'L'}}){
             my $matchGT = 0;
 	    $matchGT = ${${$match_GT{$type}}{'L'}}{$read} if (exists ${${$match_GT{$type}}{'L'}}{$read});
-	    my $match = ${$match_del_num{'L'}}{$read};
+	    my $match = ${$match_dup_num{'L'}}{$read};
             my $NA = 0;
 	    $NA = ${${$match_GTNA{$type}}{'L'}}{$read} if (exists ${${$match_GTNA{$type}}{'L'}}{$read});
 	    my $precis = 0;
@@ -1922,7 +1922,7 @@ if ((exists $call_ins_num{3}) and ($ref_ins_num > 0)){
 	foreach my $read (sort {$a <=> $b} keys %{${$match_GT{$type}}{'A'}}){
             my $matchGT = 0;
 	    $matchGT = ${${$match_GT{$type}}{'A'}}{$read} if (exists ${${$match_GT{$type}}{'A'}}{$read});
-	    my $match = ${$match_del_num{'A'}}{$read};
+	    my $match = ${$match_dup_num{'A'}}{$read};
             my $NA = 0;
 	    $NA = ${${$match_GTNA{$type}}{'A'}}{$read} if (exists ${${$match_GTNA{$type}}{'A'}}{$read});
 	    my $precis = 0;
