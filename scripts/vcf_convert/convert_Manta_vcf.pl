@@ -25,7 +25,7 @@ while (my $line = <FILE>){
     next if ($type ne 'DEL') and ($type ne 'DUP') and ($type ne 'INS') and ($type ne 'INV');
     my $len = 0;
     $len = $1 if ($line[7] =~ /SVLEN=-*(\d+)/);
-    next if ($len < $min_sv_len);
+    next if ($len < $min_sv_len) and ($type ne 'INS');
     next if ($len > $max_del_len) and ($type eq 'DEL');
     next if ($len > $max_dup_len) and ($type eq 'DUP');
     my $reads = 0;
