@@ -30,7 +30,7 @@ foreach my $file (@ARGV){
 	my $bp2 = int (($line[3] + $line[4]) / 2);
 	my $svsize = $bp2 - $bp1;
 	my $reads = $line[6];
-	next if ($chr !~ /^\d+$|[XY]/);
+	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $chr02d = $chr;
 	$chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	${${$vcf{$chr02d}}{$bp1}}{$type} = "SVTYPE=$type;SVLEN=$svsize;BP1=$line[1]-$line[2];BP2=$line[3]-$line[4];READS=$reads";

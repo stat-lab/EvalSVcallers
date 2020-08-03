@@ -67,7 +67,7 @@ foreach my $file (@ARGV){
 		$read = 8;
 	    }
 	}
-	next if ($chr !~ /^\d+$|[XY]/);
+	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $gt = './.';
 	$gt = '1/1' if ($cn < 0.5) or ($cn >= 3.5);
 	$gt = '1/0' if (($cn >= 0.5) and ($cn <= 1.75)) or (($cn >= 2.5) and ($cn < 3.5));

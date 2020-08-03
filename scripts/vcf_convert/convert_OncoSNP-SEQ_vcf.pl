@@ -39,7 +39,7 @@ foreach my $file (@ARGV){
 	else{
 	    $reads = 11;
 	}
-	next if ($chr !~ /^\d+$|[XY]/);
+	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $chr02d = $chr;
 	$chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	${$vcf{$chr02d}}{$pos} = "$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;COPYNUM=$copy_num;READS=$reads\n";

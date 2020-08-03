@@ -19,6 +19,7 @@ while (my $line = <FILE>){
     my @line = split (/\s+/, $line);
     my $chr = $line[0];
     my $pos = $line[1];
+    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     my $type = '';
     $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
     next if ($type eq 'BND');

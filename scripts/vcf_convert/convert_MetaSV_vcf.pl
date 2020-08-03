@@ -56,7 +56,7 @@ while (my $line = <FILE>){
     if (($type eq 'DEL') or ($type eq 'INV')){
 	next if ($qual ne 'PASS');				# for DEL and INV, low quality sites are removed
     }
-    next if ($chr !~ /^\d+$|[XY]/);
+    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     print "$chr\t$pos\t$type\t.\t.\t.\t$qual\tSVTYPE=$type;SVLEN=$len;READS=$reads\n" if ($type ne 'TRA');
     print "$chr\t$pos\t$type\t.\t.\t.\t$qual\tSVTYPE=$type;SVLEN=$len;READS=$reads\tCHR2=$chr2;POS2=$pos2\n" if ($type eq 'TRA');
 }

@@ -38,7 +38,7 @@ foreach my $file (@ARGV){
 		    $chr = $line[0];
 		    $pos = $line[1];
 		}
-		next if ($chr !~ /^\d+$|[XY]/);
+		next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 		my $chr02d = $chr;
 		$chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 		${${$vcf{$chr02d}}{$pos}}{$type} = "$len=$reads";

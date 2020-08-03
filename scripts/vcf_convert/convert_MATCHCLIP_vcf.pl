@@ -13,7 +13,7 @@ while (my $line = <FILE>){
     next if ($line =~ /^#/);
     my @line = split (/\t/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^[\dX]+$/);
+    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     my $pos = $line[1];
     my $end = $line[2];
     my $type = $line[3];

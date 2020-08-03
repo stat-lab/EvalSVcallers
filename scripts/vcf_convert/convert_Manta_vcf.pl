@@ -19,7 +19,7 @@ while (my $line = <FILE>){
     }
     my @line = split (/\s+/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^[\dXY]+$/);
+    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     my $pos = $line[1];
     my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
     next if ($type ne 'DEL') and ($type ne 'DUP') and ($type ne 'INS') and ($type ne 'INV');

@@ -19,7 +19,7 @@ while (my $line = <FILE>){
     next if ($line =~ /^#|^$/);
     my @line = split (/\t/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^\d+$|[XY]/);
+    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     my $pos = $line[1];
     my $type = $line[3];
     my $len = $line[4];
@@ -44,7 +44,7 @@ while (my $line = <FILE>){
     next if ($line =~ /^#|^$/);
     my @line = split (/\t/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^\d+$|[XY]/);
+    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     my $pos = $line[1];
     my $type = $line[3];
     my $len = $line[4];

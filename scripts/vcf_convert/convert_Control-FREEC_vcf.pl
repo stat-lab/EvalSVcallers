@@ -17,7 +17,7 @@ while (my $line = <FILE>){
     }	
     my @line = split (/\t/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^\d+$/);
+    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     my $pos = $line[1];
     my $end = $line[2];
     my $len = $end - $pos + 1;

@@ -17,7 +17,7 @@ foreach my $var_file (@ARGV){
         my @line = split (/\t/, $line);
         my $chr = $line[0];
         my $chr02d = $chr;
-		$chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
+	$chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
         my $bp1_s = $line[1];
         my $bp1_e = $line[2];
         my $bp2_s = $line[4];

@@ -226,7 +226,7 @@ if (@tra_file > 0){
 
 if ($gt_flag == 1){
     foreach my $chr (sort keys %vcf){
-        next if ($chr !~ /^\d+$|[XY]/);
+        next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
         foreach my $pos (sort {$a <=> $b} keys %{$vcf{$chr}}){
         foreach my $type (keys %{${$vcf{$chr}}{$pos}}){
             my $gt = './.';
@@ -246,7 +246,7 @@ if ($gt_flag == 1){
 }
 else{
     foreach my $chr (sort keys %vcf){
-        next if ($chr !~ /^\d+$|[XY]/);
+        next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
         foreach my $pos (sort {$a <=> $b} keys %{$vcf{$chr}}){
         foreach my $type (keys %{${$vcf{$chr}}{$pos}}){
             print "$chr\t$pos\t$type\t.\t.\t.\tPASS\t${${$vcf{$chr}}{$pos}}{$type}\n";

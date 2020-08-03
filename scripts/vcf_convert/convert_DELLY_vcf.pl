@@ -47,7 +47,7 @@ foreach my $file (@ARGV){
 	    $end = 0;
 	    $len = 0;
 	}
-	next if ($chr !~ /^\d+$|[XY]/);
+	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $chr_02d = $chr;
 	$chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	${${$vcf{$chr_02d}}{$pos}}{$type} = "$chr\t$pos\t$type\t.\t.\t.\t$qual\tSVTYPE=$type;SVLEN=$len;READS=$reads;GT=$gt" if ($type ne 'TRA');

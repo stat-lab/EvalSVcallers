@@ -38,7 +38,7 @@ foreach my $file (@ARGV){
 	$pvalue = $1 if ($line[7] =~ /PVAL=[\d\.]+e-(\d+)/);
 	$pvalue =~ s/^0*// if ($pvalue =~ /^0\d+/);
 	my $reads = $pvalue + 3;
-	next if ($chr !~ /^\d+$|[XY]/);
+	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $chr_02d = $chr;
 	$chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	${${$vcf{$chr_02d}}{$pos}}{$type} = "$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;READS=$reads";

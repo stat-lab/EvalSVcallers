@@ -13,7 +13,7 @@ while (my $line = <FILE>){
     }
     my @line = split (/\t/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^\d+$|[XY]/);
+    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     my $pos = $line[1];
     my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
     $type = 'DUP' if ($type eq 'TDUP');

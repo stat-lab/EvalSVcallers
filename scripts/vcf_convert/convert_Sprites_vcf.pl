@@ -30,7 +30,7 @@ foreach my $file (@calls){
 	my $chr = $line[0];
 	my $chr2 = $line[3];
 	next if ($chr ne $chr2);
-	next if ($chr !~ /^\d+$|[XY]/);
+	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $pos1 = $line[1];
 	my $pos2 = $line[2];
 	my $pos3 = $line[4];

@@ -17,7 +17,7 @@ while (my $line = <FILE>){
     next if ($line =~ /^#|^$/);
     my @line = split (/\t/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^[\dXY]+/);
+    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     my $pos = $line[1];
     my $qual = $line[5];
     my $alt = $line[4];

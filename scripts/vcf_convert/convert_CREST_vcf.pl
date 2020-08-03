@@ -29,7 +29,7 @@ foreach my $var_file (@ARGV){
 	my $reads = int (($line[3] + $line[7]) / 2 + 0.5);
 	my $chr2 = '';
 	my $pos2 = 0;
-	next if ($chr !~ /^\d+$|[XY]/);
+	next if ($chr !~ /^chr/) and ($chr !~ /^\d+$|[XY]/);
 	my $chr_02d = $chr;
 	$chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	if ($type eq 'CTX'){

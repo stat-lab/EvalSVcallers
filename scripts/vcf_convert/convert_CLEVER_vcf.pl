@@ -30,7 +30,7 @@ while (my $line = <FILE>){
     $reads = $1 if ($line[-1] =~ /:(\d+)$/);
     my $chr_02d = $chr;
     $chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
-    next if ($chr !~ /^\d+$|[XY]/);
+    next if ($chr !~ /^chr/) and ($chr !~ /^\d+$|[XY]/);
     ${${$vcf{$chr_02d}}{$pos}}{$type} = "$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;READS=$reads";
 }
 close (FILE);

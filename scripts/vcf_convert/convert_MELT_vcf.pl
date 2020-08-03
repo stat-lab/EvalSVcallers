@@ -33,7 +33,7 @@ foreach my $file (@ARGV){
 	if (($type ne 'NUMT') and ($type ne 'VEI')){
 	    $class = 'MEI';
 	}
-	next if ($chr !~ /^\d+$|[XY]/);
+	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $chr02d = $chr;
 	$chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	${$vcf{$chr02d}}{$pos} = "$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$class;SVLEN=$len;READS=$reads;GT=$gt\n";

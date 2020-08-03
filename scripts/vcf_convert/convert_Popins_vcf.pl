@@ -31,7 +31,7 @@ foreach my $var_file (@ARGV){
 	$reads = $1 if ($line[7] =~ /RP=(\d+);/);
 	my $gt = '';
 	$gt = $1 if (@line > 9) and ($line[9] =~ /^(.+?):/);
-	next if ($chr !~ /^\d+$|[XY]/);
+	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $chr_02d = $chr;
 	$chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	${$vcf{$chr_02d}}{$pos} = "$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;READS=$reads;GT=$gt" if ($gt ne '');

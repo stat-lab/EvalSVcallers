@@ -40,7 +40,7 @@ foreach my $var_file (@ARGV){
 	    $type = 'DEL' if ($line[7] > 0);
 	    $type = 'INS' if ($line[7] < 0);
 	}
-	next if ($chr !~ /^[\dXY]+$/);
+	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $chr_02d = $chr;
 	$chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	if ($type ne 'CTX'){

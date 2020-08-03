@@ -70,9 +70,11 @@ while (my $line = <FILE>){
     elsif ($type eq 'DEL'){
 	next if ($line[3] > $max_loss);
     }
+    my $chr2 = $chr;
+    $chr2 = $1 if ($chr =~ /^chr(.+)/);
     my $gap_overlap = 0;
-    foreach my $gstart (sort {$a <=> $b} keys %{$gap{$chr}}){
-	my $gend = ${$gap{$chr}}{$gstart};
+    foreach my $gstart (sort {$a <=> $b} keys %{$gap{$chr2}}){
+	my $gend = ${$gap{$chr2}}{$gstart};
 	if (($pos <= $gstart) and ($end >= $gend)){
 	    if ($gend - $gstart + 1 >= $len * 0.5){
 		$gap_overlap = 1;
@@ -144,7 +146,7 @@ while (my $line = <FILE>){
 	$reads = 3 if ($len > 1000000) and ($len <= 2000000) and ($Q0_rate <= 0.01);
 	$reads = 2 if ($len > 2000000) and ($Q0_rate <= 0.01)
     }
-    next if ($chr !~ /^\d+$|[XY]/);
+    next if ($chr !~ /^chr/) and ($chr !~ /^\d+$|[XY]/);
     my $chr_02d = $chr;
     $chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
     my $gt = './.';
