@@ -1,5 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
+use FindBin qw($Bin);
 
 # covert Delly output files to vcf
 
@@ -20,7 +21,7 @@ $long_read_flag = shift @ARGV if (@ARGV > 0);
 my %vcf;
 my $count = 0;
 
-my $gap_bed = '/home/gluster/sg/kosugi/hg19_genome/UCSC_db/gap.bed';
+my $gap_bed = "$Bin/gap.bed";
 
 my %gap;
 

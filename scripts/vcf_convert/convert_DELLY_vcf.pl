@@ -20,7 +20,7 @@ foreach my $file (@ARGV){
     }
     $count ++;
     open (FILE, $file) if ($file =~ /\.vcf$/);
-    open (FILE, "~/tools/SV_callers/delly2/src/bcftools/bcftools view $file |") if ($file =~ /\.bcf$/);
+    open (FILE, "bcftools view $file |") if ($file =~ /\.bcf$/);
     while (my $line = <FILE>){
 	chomp $line;
 	if ($line =~ /^#/){
