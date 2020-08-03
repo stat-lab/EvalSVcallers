@@ -21,7 +21,7 @@ $long_read_flag = shift @ARGV if (@ARGV > 0);
 my %vcf;
 my $count = 0;
 
-my $gap_bed = "$Bin/gap.bed";
+my $gap_bed = "$Bin/../../Ref_SV/gap.bed";
 
 my %gap;
 
