@@ -521,6 +521,7 @@ foreach my $id (keys %parent1_file){
         }
         my @line = split (/\t/, $line);
         my $chr = $line[0];
+	$chr =~ s/^chr// if ($chr =~ /^chr/);
         next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
         next if ($chr !~ /^\d+$|[XY]/);
         next if ($chr eq 'Y') and ($ref_type eq 'N');
@@ -600,6 +601,7 @@ foreach my $id (keys %parent2_file){
         }
         my @line = split (/\t/, $line);
         my $chr = $line[0];
+	$chr =~ s/^chr// if ($chr =~ /^chr/);
         next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
         next if ($chr !~ /^\d+$|[XY]/);
         next if ($chr eq 'Y') and ($ref_type eq 'N');
@@ -652,6 +654,7 @@ foreach my $id (keys %parent2_file){
     close (FILE);
 }
 
+my $hg19_flag = 0;
 
 foreach my $id (keys %var_file){
     my $var_file = $var_file{$id};
@@ -672,6 +675,9 @@ foreach my $id (keys %var_file){
 	    next if ($line =~ /^#/);
 	    my @line = split (/\t/, $line);
 	    my $chr = $line[0];
+	    $hg19_flag = 1 if ($chr =~ /^chr[\dXY]$/);
+	    $chr =~ s/^chr// if ($chr =~ /^chr/);
+	    
 	    next if ($chr !~ /^\d+$|[XY]/);
 	    next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
             next if (($chr eq 'Y')) and ($include_y == 0);
@@ -750,7 +756,6 @@ foreach my $id (keys %var_file){
 	    my $reads = 3;
 	    $reads = $1 if ($line[7] =~ /READS=(\d+)/);
 	    next if ($reads < $min_read);
-	    my $chr2 = '';
 	    my $pos2 = 0;
 	    next if ($len < $min_sv_len) and ($len > 0) and ($type ne 'INS') and ($type ne 'TRA');
 	    next if ($len > $max_sv_len);
@@ -1511,13 +1516,29 @@ foreach my $set (@tool_set){
                     $ID2_MIE_recal{$type} ++ if ($ID2_parent_flag == 1) and ($ID2 ne '') and ($trio_flag2 == 1);
                 }
                 if (($output_vcf == 1) and ($set2 =~ /=/)){
-                    print OUT2 "TP ${$vcf{$chr}}{$pos}\n";
+		    if ($hg19_flag == 0){
+			print OUT2 "TP ${$vcf{$chr}}{$pos}\n";
+		    }
+		    else{
+			my @line2 = split (/\t/, ${$vcf{$chr}}{$pos});
+			$line2[0] = 'chr' . $line2[0];
+			my $new_line2 = join ("\t", @line2);
+			print OUT2 "TP $new_line2\n";
+		    }
                 }
 		$pre_info{$type} = "$chr=$pos=$len=1";
 	    }
             else{
                 if (($output_vcf == 1) and ($set2 =~ /=/)){
-                    print OUT2 "FP ${$vcf{$chr}}{$pos}\n";
+		    if ($hg19_flag == 0){
+			print OUT2 "FP ${$vcf{$chr}}{$pos}\n";
+		    }
+		    else{
+			my @line2 = split (/\t/, ${$vcf{$chr}}{$pos});
+			$line2[0] = 'chr' . $line2[0];
+			my $new_line2 = join ("\t", @line2);
+			print OUT2 "FP $new_line2\n";
+		    }
                 }
 		$pre_info{$type} = "$chr=$pos=$len=0";
 	    }

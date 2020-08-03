@@ -286,6 +286,8 @@ while (my $line = <FILE>){
     my @line = split (/\t/, $line);
     my $chr = $line[0];
     $chr =~ s/^#// if ($chr =~ /^#/);
+    my $chr2 = $chr;
+    $chr =~ s/^chr// if ($chr =~ /^chr/);
     next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
     next if (($chr eq 'Y')) and ($include_y == 0);
     my $pos = $line[1];
