@@ -2,7 +2,8 @@
 use strict;
 use Getopt::Long;
 use Pod::Usage;
-use FindBin qw/$Bin $Script/;
+use FindBin qw($Bin);
+use lib $Bin;
 
 # covert an output file from the specified SV callers to the vcf format compatible to our evaluation study
 
