@@ -45,6 +45,7 @@ elsif ($tool eq 'Mobster'){
 my $script_path = $Bin;
 
 my @convert_script = <$script_path/convert_$tool*.pl>;
+@convert_script = <$script_path/vcf_convert/convert_$tool*.pl> if (@convert_script == 0);
 
 if (@convert_script == 0){
     die "TOOL name specified is absent in 69 tools we analyzed or does not match the names:\n";
