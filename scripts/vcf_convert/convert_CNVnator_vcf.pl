@@ -71,10 +71,10 @@ while (my $line = <FILE>){
 	next if ($line[3] > $max_loss);
     }
     my $chr2 = $chr;
-    $chr2 = $1 if ($chr =~ /^chr(.+)/);
+    $chr = $1 if ($chr =~ /^chr(.+)/);
     my $gap_overlap = 0;
-    foreach my $gstart (sort {$a <=> $b} keys %{$gap{$chr2}}){
-	my $gend = ${$gap{$chr2}}{$gstart};
+    foreach my $gstart (sort {$a <=> $b} keys %{$gap{$chr}}){
+	my $gend = ${$gap{$chr}}{$gstart};
 	if (($pos <= $gstart) and ($end >= $gend)){
 	    if ($gend - $gstart + 1 >= $len * 0.5){
 		$gap_overlap = 1;
@@ -146,15 +146,15 @@ while (my $line = <FILE>){
 	$reads = 3 if ($len > 1000000) and ($len <= 2000000) and ($Q0_rate <= 0.01);
 	$reads = 2 if ($len > 2000000) and ($Q0_rate <= 0.01)
     }
-    next if ($chr !~ /^chr/) and ($chr !~ /^\d+$|[XY]/);
-    my $chr_02d = $chr;
-    $chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
+    next if ($chr !~ /^[\dXY]+/);
+    my $chr_02d = $chr2;
+    $chr_02d = sprintf ("%02d", $chr2) if ($chr2 =~ /^\d+$/);
     my $gt = './.';
 #    $gt = '1/1' if ($line[3] < 0.25) or (($line[3] > 1.75) and ($line[3] <= 2.5));
 #    $gt = '1/0' if (($line[3] >= 0.25) and ($line[3] < 1)) or (($line[3] > 1) and ($line[3] <= 1.75));
     $gt = '1/1' if ($line[3] < 0.25) or (($line[3] > 1.85) and ($line[3] <= 2.2));
     $gt = '1/0' if (($line[3] >= 0.25) and ($line[3] < 1)) or (($line[3] > 1.35) and ($line[3] <= 1.65));
-    ${${$vcf{$chr_02d}}{$pos}}{$type} = "$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;RDRATIO=$line[3];READS=$reads;GT=$gt";
+    ${${$vcf{$chr_02d}}{$pos}}{$type} = "$chr2\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;RDRATIO=$line[3];READS=$reads;GT=$gt";
 }
 close (FILE);
 
