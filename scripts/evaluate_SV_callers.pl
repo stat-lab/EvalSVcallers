@@ -291,12 +291,10 @@ while (my $line = <FILE>){
     next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
     next if (($chr eq 'Y')) and ($include_y == 0);
     my $pos = $line[1];
-    my $type = $line[2];
-    $type = 'DUP' if ($type eq 'tandem');
-    my $type2 = $type;
-    $type2 = 'ALU' if ($type eq 'Alu');
+    my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
+    my $type2 = $line[2];
     $type = 'MEI' if ($type2 eq 'ALU') or ($type2 eq 'LINE1') or ($type2 eq 'HERVK') or ($type2 eq 'SVA');
-    next if ($type eq 'INS-DUP');
+    next if ($type2 eq 'INS-DUP');
     my $svlen = 0;
     $svlen = $1 if ($line[7] =~ /SVLEN=-*(\d+)/);
     next if ($svlen < $min_ref_len) and ($type ne 'INS');
@@ -363,9 +361,9 @@ while (my $line = <FILE>){
     
     my $GT = 'HM';
     $GT = 'HT' if ($line[7] =~ /HT/);
-    ${${$ref{$type2}}{$chr}}{$pos} = $svlen;
-    ${${$refGT{$type2}}{$chr}}{$pos} = $GT if ($ref_sv eq $ref_sv_simA);
-    ${${$ref_info{$type2}}{$chr}}{$pos} = $line[7];
+    ${${$ref{$type}}{$chr}}{$pos} = $svlen;
+    ${${$refGT{$type}}{$chr}}{$pos} = $GT if ($ref_sv eq $ref_sv_simA);
+    ${${$ref_info{$type}}{$chr}}{$pos} = $line[7];
     ${${$ref{'INS'}}{$chr}}{$pos} = $svlen if ($type =~ /VEI|MEI|NUMT/);
     if (($type eq 'INS') or ($type eq 'MEI')){
         ${$ref_ins{$chr}}{$pos} = $svlen;
