@@ -410,14 +410,15 @@ while (my $line = <FILE>){
     next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
     next if (($chr eq 'Y')) and ($include_y == 0);
     my $pos = $line[1];
-    my $type = $line[2];
+    my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
+    my $type2 = $line[2];
 #    $type = 'DEL' if ($type eq 'INDEL');
-    $type = 'DUP' if ($type eq 'tandem');
+    $type = 'DUP' if ($type2 eq 'tandem');
     my $svlen = 0;
     $svlen = $1 if ($line[7] =~ /SVLEN=-*(\d+)/);
     next if ($svlen < $min_ref_len) and ($type ne 'INS');
     next if ($svlen > $max_ref_len);
-    next if ($type eq 'INS-DUP');
+    next if ($type2 eq 'INS-DUP');
     my $end = $pos + $svlen;
     my $gap_overlap = 0;
     foreach my $gstart (sort {$a <=> $b} keys %{$gap{$chr}}){
