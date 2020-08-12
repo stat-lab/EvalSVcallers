@@ -293,6 +293,7 @@ while (my $line = <FILE>){
     my $pos = $line[1];
     my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
     my $type2 = $line[2];
+    $type = 'DUP' if ($type2 eq 'tandem');
     $type = 'MEI' if ($type2 eq 'ALU') or ($type2 eq 'LINE1') or ($type2 eq 'HERVK') or ($type2 eq 'SVA');
     next if ($type2 eq 'INS-DUP');
     my $svlen = 0;
