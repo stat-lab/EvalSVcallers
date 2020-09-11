@@ -285,7 +285,7 @@ while (my $line = <FILE>){
     next if ($line =~ /^#[^\dXY]+/);
     my @line = split (/\t/, $line);
     my $chr = $line[0];
-    $chr =~ s/^#// if ($chr =~ /^#/);
+    next if ($chr =~ /^#/);
     my $chr2 = $chr;
     $chr =~ s/^chr// if ($chr =~ /^chr/);
     next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
