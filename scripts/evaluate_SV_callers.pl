@@ -74,6 +74,8 @@ my %min_reads_parent;
 
 my $substract_ME = 0;
 
+my $out_TF = 0;
+
 my $help;
 
 GetOptions(
@@ -96,6 +98,7 @@ GetOptions(
     'eval_bp|eb' => \$eval_bp,
     'ins|i' => \$ins_eval,
     'in_y|y' => \$include_y,
+    'out_tf|of=i' => \$out_TF,
     'sub_me|sm' => \$substract_ME,
     'help' => \$help
 ) or pod2usage(-verbose => 0);
@@ -132,6 +135,7 @@ $var_base = $1 if ($var_base =~ /(.+)\./);
    --eval_bp or -eb         determine breakpoint and SV size accuracy for each SV type with the Sim-A data [default: false]
    --ins or -i              evaluate accuracy for INSs with called insertion size [default: false]
    --in_y or -y             include chrY [default: false]
+   --out_tf or -of <INT>    output TP, FO, or TP/FP calls of vcf file (0: not output, 1: output TP calls, 2: output FP calls, 3: output TP and FP calls with labels [default: 0]
    --sub_me or -sm          substract Mendelian inheritance errors from true positive calls to calculate precision and recall [default: false]
    --help or -h             output help message
    
@@ -493,6 +497,7 @@ my $gt_flag = 0;
 my %parent1;
 my %parent2;
 my %mendel_err;
+my %TP;
 
 if ($var_parent1 ne ''){
     open (FILE, $var_parent1) or die "$var_parent1 is not found: $!\n";
@@ -1238,6 +1243,7 @@ while (my $line = <FILE>){
                 }
             }
         }
+        ${${$TP{$chr}}{$pos}}{$type} = 1;
         $pre_info{$type} = "$chr=$pos=$len=1";
     }
     else{
@@ -2145,3 +2151,30 @@ if ((exists $call_inv_num{'A'}) and ($ref_inv_num > 0)){
     print OUT "\n\n";
 }
 close (OUT);
+
+if ($out_TF > 0){
+    my $out_file = "$var_base.TP.vcf" if ($out_TF == 1);
+    $out_file = "$var_base.FP.vcf" if ($out_TF == 2);
+    $out_file = "$var_base.TF.vcf" if ($out_TF == 3);
+    open (OUT1, "> $out_file");
+    open (FILE, $var_child) or die "$var_child is not found: $!\n";
+    while (my $line = <FILE>){
+        chomp $line;
+        if ($line =~ /^#|^$/){
+            next;
+        }
+        my ($chr, $pos) = split (/\t/, $line);
+	my $type = $1 if ($line =~ /SVTYPE=(.+?);/);
+        $type = 'INS' if ($type =~ /MEI|VEI|NUMT/);
+        if (exists ${${$TP{$chr}}{$pos}}{$type}){
+            print OUT1 "$line\n" if ($out_TF == 1);
+            print OUT1 "TP $line\n" if ($out_TF == 3);
+        }
+        else{
+            print OUT1 "$line\n" if ($out_TF == 2);
+            print OUT1 "FP $line\n" if ($out_TF == 3);
+        }
+    }
+    close (FILE);
+    close (OUT1);
+}
