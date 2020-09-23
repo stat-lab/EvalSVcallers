@@ -12,9 +12,9 @@ my $ref_sv_simA = "$script_path/../Ref_SV/Sim-A.SV.vcf";
 
 my $ref_sv_NA12878 = "$script_path/../Ref_SV/NA12878_DGV-2016_LR-assembly.vcf";
 
-my $ref_mei = "$script_path/../Simulated_data/Sim-MEI.chr17.vcf";
-my $ref_vei = "$script_path/../Simulated_data/Sim-VEI.chr17.vcf";
-my $ref_numt = "$script_path/../Simulated_data/Sim-NUMT.chr17.vcf";
+my $ref_mei = "$script_path/../Simulated_data_in_our_study/Sim-MEI/Sim-MEI.chr17.vcf";
+my $ref_vei = "$script_path/../Simulated_data_in_our_study/Sim-VEI/Sim-VEI.chr17.vcf";
+my $ref_numt = "$script_path/../Simulated_data_in_our_study/Sim-NUMT/Sim-NUMT.chr17.vcf";
 
 my $gap_bed = "$script_path/../Ref_SV/gap.bed";
 
@@ -221,6 +221,7 @@ my %refGT;
 my %ref_ins;
 my %ref_dup;
 my %match_ref;
+my %ref_mei_num;
 my $ref_del_num = 0;
 my $ref_ins_num = 0;
 my $ref_inv_num = 0;
@@ -293,6 +294,8 @@ while (my $line = <FILE>){
     my $pos = $line[1];
     my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
     my $type2 = $line[2];
+    $type2 = 'ALU' if ($type2 eq 'Alu') or ($type2 eq 'alu');
+    $type2 = 'LINE1' if ($type2 eq 'L1');
     $type = 'DUP' if ($type2 eq 'tandem');
     $type = 'MEI' if ($type2 eq 'ALU') or ($type2 eq 'LINE1') or ($type2 eq 'HERVK') or ($type2 eq 'SVA');
     next if ($type2 eq 'INS-DUP');
@@ -385,14 +388,17 @@ while (my $line = <FILE>){
         $ref_sva_num ++ if ($type2 eq 'SVA');
         $ref_hervk_num ++ if ($type2 eq 'HERVK');
         $ref_ins_num ++;
+	$ref_mei_num{$type2} ++;
     }
     elsif ($type eq 'VEI'){
         $ref_vei_num ++;
         $ref_ins_num ++;
+	$ref_mei_num{$type} ++;
     }
     elsif ($type eq 'NUMT'){
         $ref_numt_num ++;
         $ref_ins_num ++;
+	$ref_mei_num{$type} ++;
     }
     if ($svlen <= 1000){
         if (($svlen <= 100) and ($type eq 'DEL')){
@@ -454,6 +460,7 @@ my %match_del_num;
 my %match_ins_num;
 my %match_inv_num;
 my %match_dup_num;
+my %match_mei_num;
 
 my %match_GT;
 my %match_GTNA;
@@ -465,6 +472,7 @@ my %call_del_num;
 my %call_ins_num;
 my %call_inv_num;
 my %call_dup_num;
+my %call_mei_num;
 
 my %nocall_dup_num;
 my %nocall_ins_num;
@@ -660,11 +668,14 @@ while (my $line = <FILE>){
     my $pos = $line[1];
     my $type = '';
     $type = $line[2] if ($line[2] =~ /^DEL$|^DUP$|^INS$|^INV$|^TRA$|^ALU$|^LINE1$|^L1$|^SVA$|^HERVK$|^ERVK$|^VEI$|^NUMT$/i);
+    $type = $1 if ($line[4] =~ /INS:ME:(.+)/);
     $type = $1 if ($type eq '') and ($line[7] =~ /SVTYPE=(.+?);/);
     $type = uc $type;
     $type = 'TRA' if ($type eq 'CTX');
     my $class = '';
-    $class = 'MEI' if ($type =~ /^ALU$|^LINE1$|^L1$|^SVA$|^HERVK$|^ERVK$/i);
+    $class = uc $type if ($type =~ /^ALU$|^LINE1$|^L1$|^SVA$|^HERVK$|^ERVK$|^VEI$|^NUMT$/i);
+    $class = 'LINE1' if ($class eq 'L1');
+    $class = 'HERVK' if ($class eq 'ERVK');
     $type = 'INS' if ($type =~ /^ALU$|^LINE1$|^L1$|^SVA$|^HERVK$|^ERVK$|^VEI$|^NUMT$/i);
     next if (!exists $sv_type{$type}) and ($sv_type ne 'ALL');
     my $len = 0;
@@ -789,6 +800,7 @@ while (my $line = <FILE>){
             foreach my $minread (sort {$a <=> $b} @min_reads){
                 if ($reads >= $minread){
                     $call_ins_num{$minread} ++;
+		    ${$call_mei_num{$class}}{$minread} ++ if ($class ne '');
                 }
             }
         }
@@ -1131,6 +1143,7 @@ while (my $line = <FILE>){
             if ($type eq 'INS'){
                 if ($reads >= $minread){
                     $match_ins_num{$minread} ++;
+		    ${$match_mei_num{$class}}{$minread} ++ if ($class ne '');
                 }
             }
             else{
@@ -1255,8 +1268,9 @@ foreach my $type (keys %mendel_err){
             ${${$mendel_err{$type}}{$size}}{$minread} = 0 if (!exists ${${$mendel_err{$type}}{$size}}{$minread});
         }
     }
-}   
+}
 
+my @MEI = ('ALU', 'LINE1', 'SVA', 'HERVK', 'NUMT', 'VEI');
 
 my $ref_prefix = basename ($ref_sv);
 $ref_prefix = $1 if ($ref_prefix =~ /(.+?)\./);
@@ -1960,6 +1974,59 @@ if ((exists $call_ins_num{3}) and ($ref_ins_num > 0)){
 	if (exists ${$bp_diff{$type}}{'A'}){
 	    print "[Break Points SD ('A')]: $SDbp\t[Size SD ('A')]: $SDlen\n";
 	    print OUT "[Break Points SD ('A')]: $SDbp\t[Size SD ('A')]: $SDlen\n";
+	}
+    }
+    print "\n\n";
+    print OUT "\n\n";
+}
+if ((scalar keys %call_mei_num > 0) and (($ref_sv eq $ref_mei) or ($ref_sv eq $ref_vei) or ($ref_sv eq $ref_numt))){
+    foreach my $mei (@MEI){
+        next if (!exists $ref_mei_num{$mei});
+	foreach my $minread (sort {$a <=> $b} @min_reads){
+	    ${$call_mei_num{$mei}}{$minread} = 0 if (!exists ${$call_mei_num{$mei}}{$minread});
+	    ${$match_mei_num{$mei}}{$minread} = 0 if (!exists ${$match_mei_num{$mei}}{$minread});
+	}
+    }
+    foreach my $mei (@MEI){
+	next if (!exists $ref_mei_num{$mei});
+	print "\n# $mei\n";
+	print "Call (A)\t";
+	print OUT "Call (A)\t";
+	foreach my $minread (sort {$a <=> $b} keys %{$call_mei_num{$mei}}){
+	    print "${$call_mei_num{$mei}}{$minread}\t";
+	    print OUT "${$call_mei_num{$mei}}{$minread}\t";
+	}
+	print "\nRecall (A)\t";
+	print OUT "\nRecall (A)\t";
+	foreach my $read (sort {$a <=> $b} keys %{$match_mei_num{$mei}}){
+	    my $match = ${$match_mei_num{$mei}}{$read};
+	    my $recall = int ($match / $ref_mei_num{$mei} * 1000) / 10;
+	    print "$recall\t";
+	    print OUT "$recall\t";
+	}
+	print "\nPrecis (A)\t";
+	print OUT "\nPrecis (A)\t";
+	foreach my $read (sort {$a <=> $b} keys %{$match_mei_num{$mei}}){
+	    my $match = ${$match_mei_num{$mei}}{$read};
+	    my $precis = 0;
+	    $precis = int ($match / ${$call_mei_num{$mei}}{$read} * 1000) / 10 if (${$call_mei_num{$mei}}{$read} > 0);
+	    print "$precis\t";
+	    print OUT "$precis\t";
+	}
+	if (($eval_gt == 1) and ($gt_flag == 1)){
+	    print "\nGenotying (A)\t";
+	    print OUT "\nGenotying (A)\t";
+	    foreach my $read (sort {$a <=> $b} keys %{${$match_GT{$mei}}{'A'}}){
+		my $matchGT = 0;
+		$matchGT = ${${$match_GT{mei}}{'A'}}{$read} if (exists ${${$match_GT{$mei}}{'A'}}{$read});
+		my $match = ${$match_mei_num{'A'}}{$read};
+		my $NA = 0;
+		$NA = ${${$match_GTNA{$mei}}{'A'}}{$read} if (exists ${${$match_GTNA{$mei}}{'A'}}{$read});
+		my $precis = 0;
+		$precis = int ($matchGT / ($match - $NA) * 1000) / 10 if ($match - $NA > 0);
+		print "$precis($match $matchGT $NA)\t";
+		print OUT "$precis($match $matchGT $NA)\t";
+	    }
 	}
     }
     print "\n\n";
