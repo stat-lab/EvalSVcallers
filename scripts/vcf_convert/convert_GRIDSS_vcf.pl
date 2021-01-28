@@ -11,13 +11,14 @@ my $max_sv_len = 20000000;
 
 my %used;
 
-open (FILE, $var_file) or die "$var_file is not found: $!\n";
+open (FILE, $var_file) or die "$var_file is not found: $!\n" if ($var_file !~ /\.gz$/);
+open (FILE, "gzip -dc $var_file |") or die "$var_file is not found: $!\n" if ($var_file =~ /\.gz$/);
 while (my $line = <FILE>){
     chomp $line;
     next if ($line =~ /^#|^$/);
     my @line = split (/\t/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
+    next if ($chr !~ /^[\dXY]+/);
     my $pos = $line[1];
     my $qual = $line[5];
     my $alt = $line[4];
