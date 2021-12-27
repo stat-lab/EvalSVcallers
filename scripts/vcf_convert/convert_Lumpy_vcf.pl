@@ -16,7 +16,8 @@ foreach my $file (@ARGV){
 	next;
     }
     $count ++;
-    open (FILE, $file);
+    open (FILE, $file) if ($file !~ /\.gz$/);
+    open (FILE, "gzip -dc $file |") if ($file =~ /\.gz$/);
     while (my $line = <FILE>){
 	chomp $line;
 	if ($line =~ /^#/){
