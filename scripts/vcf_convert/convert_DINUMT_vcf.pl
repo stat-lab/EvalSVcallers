@@ -14,7 +14,6 @@ while (my $line = <FILE>){
     my $pos = $line[1];
     my $reads = 10;
     my $len = $1 if ($line[7] =~ /MLEN=(\d+)/);
-    next if ($chr !~ /^c*h*r*[\dXY]+$/);
     print "$chr\t$pos\tNUMT\t.\t.\t.\tPASS\tSVTYPE=INS;SVLEN=$len;READS=$reads\n";
 }
 close (FILE);
