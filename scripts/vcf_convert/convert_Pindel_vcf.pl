@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert Pindel output files to vcf
-
 my @del_file;
 my @dup_file;
 my @ins_file;
@@ -20,7 +18,7 @@ if (@ARGV == 0){
 foreach my $file (@ARGV){
     if ((-f $file) and ($file =~ /(.+)_D$/)){
 	push @del_file, $file;
-    push @out_prefix, $1;
+    	push @out_prefix, $1;
     }
     elsif ((-f $file) and ($file =~ /_TD$/)){
 	push @dup_file, $file;
@@ -38,34 +36,6 @@ foreach my $file (@ARGV){
 	push @tra_file, $file;
     }
 }
-=pod
-foreach my $prefix (@out_prefix){
-    my $chr = '';
-    $chr = $1 if ($prefix =~ /\.(chr[\dXY]+)/);
-    my $convert_command = "/share/project/sg/kosugi/tools/pindel-master/pindel2vcf -P $prefix -r /home/lustre/sg/kosugi/SV_calls/Ref/hs37d5.$chr.fasta -R GRCh37.p5 -d 20110817 2>pindel2vcf.log" if ($chr ne '');
-    $convert_command = "/share/project/sg/kosugi/tools/pindel-master/pindel2vcf -P $prefix -r /home/lustre/sg/kosugi/SV_calls/Ref/hs37d5.fa -R GRCh37.p5 -d 20110817 2>pindel2vcf.log" if ($chr eq '');
-    system ("$convert_command");
-    my $vcf_file = "$prefix.vcf";
-    open (FILE, $vcf_file) or die "$vcf_file is not found:$!\n";
-    while (my $line = <FILE>){
-        chomp $line;
-        next if ($line =~ /^#|^$/);
-        my @line = split (/\t/, $line);
-        my $chr = $line[0];
-        my $pos = $line[1];
-        my $gt = $1 if ($line[9] =~ /(.+?):/);
-        my $type = $1 if ($line[7] =~ /SVTYPE=([^:;]+)/);
-        ${${$gt{$chr}}{$pos}}{$type} = $gt;
-        if (($gt ne '0/0') and ($gt ne './.')){
-            $gt_flag = 1;
-        }
-    }
-    close (FILE);
-}
-=cut
-my $min_sv_len = 80;
-
-my $min_reads = 2;
 
 my %vcf;
 
@@ -88,9 +58,7 @@ foreach my $del_file (@del_file){
 	    my $bp1 = $1 if ($line =~ /BP\s(\d+)/);
 	    my $bp2 = $1 if ($line =~ /BP\s\d+\t(\d+)/);
 	    my $reads = $1 if ($line =~ /Supports\s(\d+)/);
-	    if (($svsize >= $min_sv_len) and ($reads >= $min_reads)){
 		${${$vcf{$chr}}{$bp1}}{'DEL'} = "SVTYPE=DEL;SVLEN=$svsize;BP2=$bp2;READS=$reads;ID=D$id";
-	    }
 	    $flag = 0;
 	}
     }
@@ -114,9 +82,7 @@ foreach my $dup_file (@dup_file){
 	    my $bp1 = $1 if ($line =~ /BP\s(\d+)/);
 	    my $bp2 = $1 if ($line =~ /BP\s\d+\t(\d+)/);
 	    my $reads = $1 if ($line =~ /Supports\s(\d+)/);
-	    if (($svsize >= $min_sv_len) and ($reads >= $min_reads)){
 		${${$vcf{$chr}}{$bp1}}{'DUP'} = "SVTYPE=DUP;SVLEN=$svsize;BP2=$bp2;READS=$reads;ID=TD$id";
-	    }
 	    $flag = 0;
 	}
     }
@@ -140,9 +106,7 @@ foreach my $inv_file (@inv_file){
 	    my $bp1 = $1 if ($line =~ /BP\s(\d+)/);
 	    my $bp2 = $1 if ($line =~ /BP\s\d+\t(\d+)/);
 	    my $reads = $1 if ($line =~ /Supports\s(\d+)/);
-	    if (($svsize >= $min_sv_len) and ($reads >= $min_reads)){
 		${${$vcf{$chr}}{$bp1}}{'INV'} = "SVTYPE=INV;SVLEN=$svsize;BP2=$bp2;READS=$reads;ID=IV$id";
-	    }
 	    $flag = 0;
 	}
     }
@@ -166,9 +130,7 @@ foreach my $ins_file (@ins_file){
 	    my $bp1 = $1 if ($line =~ /BP\s(\d+)/);
 	    my $bp2 = $1 if ($line =~ /BP\s\d+\t(\d+)/);
 	    my $reads = $1 if ($line =~ /Supports\s(\d+)/);
-	    if (($svsize >= $min_sv_len) and ($reads >= $min_reads)){
 		${${$vcf{$chr}}{$bp1}}{'INS'} = "SVTYPE=INS;SVLEN=$svsize;BP2=$bp2;READS=$reads;ID=I$id";
-	    }
 	    $flag = 0;
 	}
     }
@@ -214,7 +176,6 @@ if (@tra_file > 0){
 		my $chr2 = $line[5];
 		my $pos2 = $line[7];
 		my $reads = $line[11];
-		next if ($reads < $min_reads);
 		next if (exists ${${$vcf{$chr2}}{$pos2}}{'TRA'});
 		${${$vcf{$chr}}{$bp1}}{'TRA'} = "SVTYPE=TRA;READS=$reads\tCHR2=$chr2;POS2=$pos2" if ($reads >= $min_reads);
 		next;
@@ -226,31 +187,29 @@ if (@tra_file > 0){
 
 if ($gt_flag == 1){
     foreach my $chr (sort keys %vcf){
-        next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
         foreach my $pos (sort {$a <=> $b} keys %{$vcf{$chr}}){
-        foreach my $type (keys %{${$vcf{$chr}}{$pos}}){
-            my $gt = './.';
-            if (exists ${${$gt{$chr}}{$pos}}{$type}){
-                my $gt1 = ${${$gt{$chr}}{$pos}}{$type};
-                if ($gt1 eq '0/1'){
-                    $gt = $gt1;
-                }
-                elsif ($gt1 eq '1/1'){
-                    $gt = $gt1;
-                }
-            }
-            print "$chr\t$pos\t$type\t.\t.\t.\tPASS\t${${$vcf{$chr}}{$pos}}{$type};GT=$gt\n";
-        }
+		foreach my $type (keys %{${$vcf{$chr}}{$pos}}){
+		    my $gt = './.';
+		    if (exists ${${$gt{$chr}}{$pos}}{$type}){
+			my $gt1 = ${${$gt{$chr}}{$pos}}{$type};
+			if ($gt1 eq '0/1'){
+			    $gt = $gt1;
+			}
+			elsif ($gt1 eq '1/1'){
+			    $gt = $gt1;
+			}
+		    }
+		    print "$chr\t$pos\t$type\t.\t.\t.\tPASS\t${${$vcf{$chr}}{$pos}}{$type};GT=$gt\n";
+		}
         }
     }
 }
 else{
     foreach my $chr (sort keys %vcf){
-        next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
         foreach my $pos (sort {$a <=> $b} keys %{$vcf{$chr}}){
-        foreach my $type (keys %{${$vcf{$chr}}{$pos}}){
-            print "$chr\t$pos\t$type\t.\t.\t.\tPASS\t${${$vcf{$chr}}{$pos}}{$type}\n";
-        }
+		foreach my $type (keys %{${$vcf{$chr}}{$pos}}){
+		    print "$chr\t$pos\t$type\t.\t.\t.\tPASS\t${${$vcf{$chr}}{$pos}}{$type}\n";
+		}
         }
     }
 }
