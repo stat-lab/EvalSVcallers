@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert BatVI output (final_hits.txt) to vcf format
-
 my %vcf;
 
 foreach my $file (@ARGV){
