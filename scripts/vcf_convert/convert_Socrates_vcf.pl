@@ -1,11 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert Delly output files to vcf
-
 my $var_file = shift @ARGV;
-
-my $min_sv_len = 30;
 
 my %vcf;
 
