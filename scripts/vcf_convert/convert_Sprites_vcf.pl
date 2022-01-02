@@ -1,12 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert Platypus output files to vcf
-
-my $min_sv_len = 10;
-
-my $min_reads = 3;
-
 my %vcf;
 
 my @calls;
@@ -30,7 +24,6 @@ foreach my $file (@calls){
 	my $chr = $line[0];
 	my $chr2 = $line[3];
 	next if ($chr ne $chr2);
-	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $pos1 = $line[1];
 	my $pos2 = $line[2];
 	my $pos3 = $line[4];
@@ -38,7 +31,6 @@ foreach my $file (@calls){
 	my $pos = int (($pos1 + $pos2) / 2 + 0.5);
 	my $end = int (($pos3 + $pos4) / 2 + 0.5);
 	my $len = $end - $pos + 1;
-	next if ($len < $min_sv_len);
 	my $type = $1 if ($line[6] =~ /(\w+?)\./);
 	my $reads = 3;
 	my $chr02d = $chr;
