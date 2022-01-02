@@ -64,7 +64,7 @@ scripts/evaluate_SV_callers.pl -r N Pindel.NA78.vcf -p1 Pindel.parent1.vcf -p2 P
        --ref_dir or -rd <STR>   directory containing reference SV vcf files (optional)
        --chr or -c <STR>        target chromosome to be analyzed [all or chr name(s), e.g., 4,5,6,X; default: all]
        --region_bed or -rb <STR> bed file indicating the regions to be analyzed (optional)
-       --len or -l <INT>        minimum size (bp) of SV [default: 30]
+       --len or -l <INT>        minimum size (bp) of SV [default: 50]
        --xlen or -xl <INT>      maximum size of SV [default: 1000000]
        --ref_len or -rl <INT>   minimum size of reference SV [default: 30]
        --ref_xlen or -rxl <INT> maximum size of reference SV [default: 1000000]
