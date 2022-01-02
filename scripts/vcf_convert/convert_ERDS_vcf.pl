@@ -14,7 +14,6 @@ while (my $line = <FILE>){
     }
     my @line = split (/\s+/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^c*h*r*[\dXY]+$/);
     my $chr02d = $chr;
     $chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
     my $pos = $line[1];
