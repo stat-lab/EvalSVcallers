@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert TEMP output files to vcf
-
 my $file = shift @ARGV;
 
 open (FILE, $file) or die "$file is not found: $!\n";
