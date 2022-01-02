@@ -1,11 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert pamir output files (insertions_setcover.vcf) to vcf
-
 my %vcf;
-
-my $min_len = 30;
 
 foreach my $file (@ARGV){
 	open (FILE, $file) or die "$file is not found: $!\n";
@@ -18,8 +14,7 @@ foreach my $file (@ARGV){
 		$chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 		my $pos = $line[1];
 		my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
-		my $len = $1 if ($line[7] =~ /SVLEN=(\d+)/);
-		next if ($len < $min_len);
+		my $len = $1 if ($line[7] =~ /SVLEN=(\d+)/);;
 		my $read = $1 if ($line[7] =~ /Support=(\d+)/);
 		${${$vcf{$chr02d}}{$pos}}{$type} = "$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;READS=$read\n";
 	}
