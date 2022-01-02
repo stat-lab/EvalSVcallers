@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert VirusFinder output files to vcf
-
 my %vcf;
 
 foreach my $file (@ARGV){
@@ -10,7 +8,7 @@ foreach my $file (@ARGV){
     while (my $line = <FILE>){
         chomp $line;
         if (($line =~ /^Chromosome\s/) or ($line =~ /^chrVirus/)){
-        next;
+        	next;
         }
         my @line = split (/\s+/, $line);
         my $chr = $line[0];
@@ -21,13 +19,13 @@ foreach my $file (@ARGV){
         my $type = 'VEI';
         my $reads = $line[6];
         if ($reads =~ /\+/){
-        my ($read_s, $read_p) = split (/\+/, $reads);
-        if ($read_s >= 3){
-            $reads = $read_s;
-        }
-        else{
-            $reads = $read_p;
-        }
+		my ($read_s, $read_p) = split (/\+/, $reads);
+		if ($read_s >= 3){
+		    $reads = $read_s;
+		}
+		else{
+		    $reads = $read_p;
+		}
         }
         ${$vcf{$chr02d}}{$pos} = "$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;READS=$reads\n";
     }
