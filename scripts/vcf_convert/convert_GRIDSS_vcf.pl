@@ -6,8 +6,6 @@ use strict;
 my $var_file = shift @ARGV;
 
 my $min_ins_len = 30;
-my $min_sv_len = 50;
-my $max_sv_len = 20000000;
 
 my %used;
 
@@ -18,7 +16,6 @@ while (my $line = <FILE>){
     next if ($line =~ /^#|^$/);
     my @line = split (/\t/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^[\dXY]+/);
     my $pos = $line[1];
     my $qual = $line[5];
     my $alt = $line[4];
@@ -92,9 +89,7 @@ while (my $line = <FILE>){
         }
         $used{$chrpos} = 1;
         $used{$chr_pos} = 1;
-        next if ($len < $min_sv_len) and ($type ne 'INS');
         next if ($len < $min_ins_len) and ($type eq 'INS');
-        next if ($len > $max_sv_len);
         my $qual = 0;
         $qual = $line[5];
         $qual = int ($qual + 0.5);
@@ -159,7 +154,6 @@ while (my $line = <FILE>){
     next if ($type eq '');
     my $len = 0;
     $len = $1 if ($line[7] =~ /SVLEN=-*(\d+)/);
-    next if ($len < $min_sv_len);
     my $qual = 0;
     $qual = $line[5];
     $qual = int ($qual + 0.5);
