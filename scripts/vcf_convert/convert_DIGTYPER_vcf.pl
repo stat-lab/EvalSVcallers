@@ -10,7 +10,6 @@ foreach my $file (@ARGV){
         }
         my @line = split (/\s+/, $line);
         my $chr = $line[0];
-        next if ($chr !~ /^c*h*r*[\dXY]+$/);
         my $pos = $line[1];
         my $len = $1 if ($line[7] =~ /SVLEN=(\d+)/);
         my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
