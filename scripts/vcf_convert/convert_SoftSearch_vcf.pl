@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-my $min_sv_len = 30;
-
 my %vcf;
 my %used;
 
@@ -49,7 +47,6 @@ foreach my $var_file (@ARGV){
 	    }
 	}
 	next if ($type eq 'TRA') and (exists ${${$vcf{$chr2}}{$pos2}}{'TRA'});
-	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $chr_second = '';
 	my $pos_second = 0;
 	if ($line[4] =~ /([^\[\]]+):(\d+)/){
