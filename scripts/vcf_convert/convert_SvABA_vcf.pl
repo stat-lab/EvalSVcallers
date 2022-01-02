@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# convert SVABA vcf file to evaluation-compatible vcf file.
-
 my $vcf_file = shift @ARGV;
 
 my %vcf;
