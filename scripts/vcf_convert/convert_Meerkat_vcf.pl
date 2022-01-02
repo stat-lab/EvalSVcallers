@@ -1,12 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert Delly output files to vcf
-
-my $min_sv_len = 30;
-
-my $min_reads = 2;
-
 my %vcf;
 
 foreach my $var_file (@ARGV){
@@ -54,7 +48,6 @@ foreach my $var_file (@ARGV){
 	    $pos = $line[6];
 	    $len = $line[8];
 	}
-	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $chr02d = $chr;
 	$chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	if ($pos > 0){
