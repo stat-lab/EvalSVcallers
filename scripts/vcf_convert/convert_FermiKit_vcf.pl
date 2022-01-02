@@ -1,13 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert FermiTK vcf files to vcf
-
-my $target_chr = '17';
-
-my $min_sv_len = 30;
-
-my $min_reads = 2;
+my $target_chr = '';
 
 my $var_file = shift @ARGV;
 
@@ -45,7 +39,7 @@ while (my $line = <FILE>){
 	$reads = 3;
     }
     my $len = $end - $pos + 1;
-    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
+    next if ($chr !~ /^c*h*r*[\dXY]+$/);
     my $chr_02d = $chr;
     $chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
     ${${$vcf{$chr_02d}}{$pos}}{$type} = "$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;READS=$reads";
