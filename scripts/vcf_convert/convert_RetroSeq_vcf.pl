@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert RetroSeq output vcf files to vcf
-
 my $file = shift @ARGV;
 
 my %vcf;
