@@ -1,11 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert MATCHCLIP output files to vcf
-
 my $file = shift @ARGV;
-
-my $min_sv_len = 30;
 
 open (FILE, $file) or die "$file is not found: $!\n";
 while (my $line = <FILE>){
@@ -13,13 +9,11 @@ while (my $line = <FILE>){
     next if ($line =~ /^#/);
     my @line = split (/\t/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     my $pos = $line[1];
     my $end = $line[2];
     my $type = $line[3];
     my $len = $line[4];
     $len = 0 - $len if ($len < 0);
-    next if ($len < $min_sv_len);
     my $RP_info = $line[8];
     my $SR_info = $line[10];
     my @RP_info = split (/;/, $RP_info);
