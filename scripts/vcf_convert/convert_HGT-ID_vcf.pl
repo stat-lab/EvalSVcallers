@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert HGT-ID output files (output.txt) to vcf
-
 my $file = shift @ARGV;
 
 my %vcf;
