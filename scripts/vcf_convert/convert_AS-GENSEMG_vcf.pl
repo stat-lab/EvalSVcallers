@@ -3,8 +3,6 @@ use strict;
 
 # covert Delly output files to vcf
 
-my $min_sv_len = 30;
-
 my $min_gain = 1.1;
 my $max_loss = 0.9;
 
@@ -30,7 +28,6 @@ foreach my $var_file (@files){
 	my $pos = $line[1];
 	my $end = $line[2];
 	my $len = $end - $pos + 1;
-	next if ($len < $min_sv_len) and ($len > 0);
 	my $type = 'DUP' if ($line[4] >= 2);
 	$type = 'DEL' if ($line[4] < 2);
 	my $score = $line[6];
