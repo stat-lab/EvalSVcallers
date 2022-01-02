@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert pbsv output files (*.vcf) to vcf
-
 my $file = shift @ARGV;
 
 open (FILE, $file) or die "$file is not found: $!\n";
