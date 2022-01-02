@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert BreakSeek output files to vcf
-
 my %vcf;
 
 foreach my $file (@ARGV){
