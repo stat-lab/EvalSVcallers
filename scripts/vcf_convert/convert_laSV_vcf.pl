@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert laSV vcf output file to vcf
-
 my $var_file = shift @ARGV;
 
 my %vcf;
@@ -15,14 +13,13 @@ while (my $line = <FILE>){
     }
     my @line = split (/\s+/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     my $pos = $line[1];
     my $type = $1 if ($line[7] =~ /EVENT=([A-Z]+)/);
     $type = 'DEL' if ($type eq 'DELETION');
     $type = 'DUP' if ($type eq 'DUPLICATION');
     $type = 'TRA' if ($type eq 'TRANSLOCATION');
     $type = 'INV' if ($type eq 'INVERSION');
-	$type = 'INS' if ($type eq 'INSERTION');
+$type = 'INS' if ($type eq 'INSERTION');
     my $end = 0;
     my $len = 0;
     my $pos2 = 0;
@@ -40,7 +37,6 @@ while (my $line = <FILE>){
 	$start = $pos2 if ($pos2 < $pos);
 	$len = abs ($pos - $pos2 + 1);
     }
-    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     my $chr_02d = $chr;
     $chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
     ${${$vcf{$chr_02d}}{$start}}{$type} = "$chr\t$start\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;READS=$reads" if ($type ne 'TRA');
