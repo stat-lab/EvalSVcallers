@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert ITIS bed output file to vcf
-
 my %vcf;
 
 foreach my $file (@ARGV){
