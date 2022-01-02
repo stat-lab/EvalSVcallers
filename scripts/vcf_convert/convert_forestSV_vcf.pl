@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert Delly output files to vcf
-
 # score <= 0.2, reads 2
 # score <= 0.3, reads 3
 # score <= 0.8, reads 8
@@ -56,7 +54,6 @@ foreach my $file (@ARGV){
 	else{
 	    $reads = 2;
 	}
-	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $chr_02d = $chr;
 	$chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	${${$vcf{$chr_02d}}{$pos}}{$type} = "$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;READS=$reads";
