@@ -11,6 +11,7 @@ my $tool = '';
 my $class = '';
 my $min_sv_size = 30;
 my $max_sv_size = 20000000;
+my $non_human = 0;
 my $help;
 
 GetOptions(
@@ -18,6 +19,7 @@ GetOptions(
     'class|c=s' => \$class,
     'len|l=i' => \$min_sv_size,
     'xlen|xl=i' => \$max_sv_size,
+    'non_human|nh' => \$non_human,
     'help' => \$help
 ) or pod2usage(-verbose => 0);
 pod2usage(-verbose => 0) if $help;
@@ -30,8 +32,9 @@ pod2usage(-verbose => 0) if $help;
   Options:
    --tool or -t <STR>       a tool name (69 tools used in our study) [mandatory]
    --class or -c <STR>      specify when tool is Mobster or PBHoney (MEI|NUMT|VEI for Mobster, NGM for PBHoney-NGM)
-   --len or -l <INT>        minimum size (bp) of SV to be kept [default: 30]
+   --len or -l <INT>        minimum size (bp) of DEL/DUP/INV to be kept [default: 30]
    --xlen or -xl <INT>      maximum size (bp) of SV to be kept [default: 20000000]
+   --non_human or -nh       sample is non-human species [default: false]
    --help or -h             output help message
    
 =cut
@@ -63,12 +66,13 @@ foreach my $var_file (@ARGV){
         chomp $_;
         next if ($_ =~ /^#|^$/);
         my ($chr, $pos) = split (/\t/, $_);
+        next if ($chr !~ /^c*h*r*[\dXY]+$/) and ($non_human == 0);
         my $type = $1 if ($_ =~ /SVTYPE=(.+?);/);
         my $chr02d = $chr;
         $chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
         my $len = 0;
         $len = $1 if ($_ =~ /SVLEN=-*(\d+)/);
-        next if ($len < $min_sv_size) and ($len != 0);
+        next if ($len < $min_sv_size) and ($type ne 'INS');
         next if ($len > $max_sv_size);
         ${${$vcf{$chr02d}}{$pos}}{$type} = $_;
     }
