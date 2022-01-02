@@ -59,7 +59,6 @@ while (my $line = <FILE>){
     $oea_read_2 = $1 if ($line[9] =~ /:\d+:(\d+)$/);
     my $reads = 0;
     $reads = int (($oea_read_1 + $oea_read_2) / 2 + 0.5);
-    next if ($chr !~ /^c*h*r*[\dXY]+$/);
     print"$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;READS=$reads\n";
 }
 close (FILE);
