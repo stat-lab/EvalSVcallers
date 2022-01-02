@@ -1,10 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert BreakDancer output file to vcf
-
-my $target_chr = '';
-
 my %vcf;
 
 my $count = 0;
@@ -36,7 +32,6 @@ foreach my $var_file (@ARGV){
 	    $type = 'DEL' if ($line[7] > 0);
 	    $type = 'INS' if ($line[7] < 0);
 	}
-	next if ($chr !~ /^c*h*r*[\dXY]+$/);
 	my $chr_02d = $chr;
 	$chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	if ($type ne 'CTX'){
