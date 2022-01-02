@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# convert SV2 vcf file to evaluation-compatible vcf file.
-
 my $vcf_file = shift @ARGV;
 
 open (FILE, $vcf_file) or die "$vcf_file is not found: $!\n";
