@@ -1,13 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert Wham output files to vcf
-
 my $file = shift @ARGV;
-
-my $min_del_size = 30;
-my $min_sv_size = 50;
-my $max_sv_size = 2000000;
 
 open (FILE, $file) or die "$file is not found: $!\n";
 while (my $line = <FILE>){
@@ -19,18 +13,13 @@ while (my $line = <FILE>){
     my @line = split (/\s+/, $line);
     my $chr = $line[0];
     my $pos = $line[1];
-    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     my $type = '';
     $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
     next if ($type eq 'BND');
     my $len = 0;
     $len = $1 if ($line[7] =~ /SVLEN=-*(\d+)/);
-    next if ($len > $max_sv_size);
-    next if ($type eq 'DEL') and ($len < $min_del_size);
-    next if ($type ne 'DEL') and ($len < $min_sv_size);
     my $read = 0;
     $read = $1 if ($line[7] =~ /A=(\d+);/);
-    next if ($read < 3);
     my $cw = $1 if ($line[7] =~ /CW=(.+?);/);
     my @cw = split (/,/, $cw);
     next if ($cw[4] > 0.2);
