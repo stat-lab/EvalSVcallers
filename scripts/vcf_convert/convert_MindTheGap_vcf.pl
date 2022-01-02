@@ -1,11 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert Delly output files to vcf
-
 my $var_file = shift @ARGV;
-
-my $min_sv_len = 30;
 
 my $var_sd = 125;
 
@@ -38,7 +34,6 @@ while (my $line = <FILE>){
     }
     $len = $1 if ($line =~ /\(\s+len=\s(\d+)\s+\)/);
     $len = $1 if ($line =~ /len_(\d+)/);
-    next if ($len < $min_sv_len) and ($len > 0);
     if ($pre_chr eq $chr){
         if ($pos > $pre_pos + $var_sd){
             ${$ins{$chr}}{$pos} = $len;
