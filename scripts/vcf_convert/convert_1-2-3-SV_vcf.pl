@@ -59,7 +59,6 @@ foreach my $file (@ARGV){
 	    $end = 0;
 	}
 	my $reads = $line[8];
-	next if ($chr !~ /^c*h*r*[\dXY]+$/);
 	my $chr02d = $chr;
 	$chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	${${$vcf{$chr02d}}{$pos}}{$type} = "SVTYPE=$type;SVLEN=$len;READS=$reads" if ($type ne 'TRA');
