@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert Delly output files to vcf
-
 my $var_file = shift @ARGV;
 
 my %vcf;
@@ -26,7 +24,6 @@ while (my $line = <FILE>){
     next if ($qual ne 'PASS');
     my $chr_02d = $chr;
     $chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
-    next if ($chr !~ /^c*h*r*[\dXY]+$/);
     my $gt = './.';
     $gt = $1 if ($line[-1] =~ /([^:]+)/);
     print "$chr\t$pos\t$type\t.\t.\t.\t$qual\tSVTYPE=$type;SVLEN=$len;READS=$reads;GT=$gt\n";
