@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-my $min_sv_len = 5;
-
 my %vcf;
 
 foreach my $var_file (@ARGV){
@@ -33,7 +31,6 @@ foreach my $var_file (@ARGV){
 	elsif ($var_file =~ /translocation/){
 	    $type = 'TRA';
 	}
-	next if ($len < $min_sv_len) and ($type ne 'INS') and ($type ne 'TRA');
 	my $reads = $line[5];
 	my $end = $pos + $len - 1;
 	my $chr2 = '';
@@ -45,7 +42,6 @@ foreach my $var_file (@ARGV){
 	    $chr2 = $1 if ($chr2 =~ /chr(.+)$/);
 	    $pos2 = $line[3];
 	}
-	next if ($chr !~ /^[\dXY]+$/);
 	my $chr02d = $chr;
 	$chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	${${$vcf{$chr02d}}{$pos}}{$type} = "SVTYPE=$type;SVLEN=$len;READS=$reads" if ($type ne 'TRA');
