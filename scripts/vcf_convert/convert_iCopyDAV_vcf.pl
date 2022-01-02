@@ -1,10 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert CopyDAV bed file to vcf
-
-my $min_sv_len = 30;
-
 my %vcf;
 
 foreach my $var_file (@ARGV){
