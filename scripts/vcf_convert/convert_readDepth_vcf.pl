@@ -1,10 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert PRISM output files to vcf
-
-my $min_sv_len = 30;
-
 my %vcf;
 
 foreach my $file (@ARGV){
@@ -67,7 +63,6 @@ foreach my $file (@ARGV){
 		$read = 8;
 	    }
 	}
-	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $gt = './.';
 	$gt = '1/1' if ($cn < 0.5) or ($cn >= 3.5);
 	$gt = '1/0' if (($cn >= 0.5) and ($cn <= 1.75)) or (($cn >= 2.5) and ($cn < 3.5));
