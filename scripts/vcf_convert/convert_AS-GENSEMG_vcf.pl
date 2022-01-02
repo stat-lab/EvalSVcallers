@@ -24,6 +24,7 @@ foreach my $var_file (@files){
 	my @line = split (/\t/, $line);
 	my $chr = $line[0];
 	next if ($chr eq 'chr');
+	next if ($chr !~ /^c*h*r*[\dXY]+$/);
 	$chr = $1 if ($chr =~ /^chr(\.+)/);
 	my $pos = $line[1];
 	my $end = $line[2];
