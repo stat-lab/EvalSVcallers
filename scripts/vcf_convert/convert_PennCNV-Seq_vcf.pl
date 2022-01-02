@@ -6,7 +6,6 @@ use File::Basename;
 
 my $file = shift @ARGV;
 
-my $min_len = 1000;
 my $min_probe = 3;
 
 my %vcf;
@@ -25,7 +24,6 @@ while (my $line = <FILE>){
     $chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
     my ($pos, $end) = split (/-/, $range);
     my $len = $end - $pos + 1;
-    next if ($len < $min_len);
     my $cn = $1 if ($line[3] =~ /cn=(\d+)/);
     next if ($cn == 2);
     my $type = 'DEL';
