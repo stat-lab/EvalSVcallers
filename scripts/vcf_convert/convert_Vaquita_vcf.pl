@@ -1,12 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert Vaquita output files to vcf
-
-my $min_sv_len = 30;
-
-my $min_reads = 2;
-
 my %vcf;
 my $count = 0;
 
@@ -35,13 +29,11 @@ foreach my $file (@ARGV){
 	next if ($type eq 'BND');
 	my $len = 0;
 	$len = $1 if ($line[7] =~ /SVLEN=-*(\d+);/);
-	next if ($len < $min_sv_len) and ($len > 0);
 	my $reads = 0;
 	$reads = $1 if ($line[7] =~ /SE=(\d+);/);
 	$reads += $1 if ($line[7] =~ /PE=(\d+);/);
 	$reads += $1 if ($line[7] =~ /CE=(\d+);/);
 	my $gt = '';
-	next if ($chr !~ /^\d+$|[XY]/);
 	print "$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;READS=$reads\n";
     }
     close (FILE);
