@@ -1,12 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert Delly output files to vcf
-
-my $min_sv_len = 5;
-
-my $min_reads = 2;
-
 my %vcf;
 my $count = 0;
 
@@ -25,24 +19,22 @@ foreach my $file (@ARGV){
 	    next;
 	}	
 	my @line = split (/\t/, $line);
-    if (@line >= 11){
-        if ($line[9] =~ /:0:0:0$/){
-            next;
-        }
-    }
+	    if (@line >= 11){
+		if ($line[9] =~ /:0:0:0$/){
+		    next;
+		}
+	    }
 	my $chr = $line[0];
 	my $pos = $line[1];
 	my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
 	next if ($type eq 'BND');
 	my $len = 0;
 	$len = $1 if ($line[7] =~ /SVLEN=-*(\d+);/);
-	next if ($len < $min_sv_len) and ($len > 0);
 	my $end = $pos + $len - 1;
 	my $reads = 0;
 	$reads = $1 if ($line[7] =~ /SU=(\d+);/);
 	my $gt = '';
 	$gt = $1 if ($line[-1] =~ /^(.+?):/);
-	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $chr_02d = $chr;
 	$chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	${${$vcf{$chr_02d}}{$pos}}{$type} = "$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;READS=$reads;GT=$gt" if ($gt ne '');
