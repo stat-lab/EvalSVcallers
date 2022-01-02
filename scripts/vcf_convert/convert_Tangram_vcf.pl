@@ -1,10 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert Mobster output files to vcf
-
-my $min_sv = 30;
-
 my %vcf;
 
 foreach my $file (@ARGV){
@@ -12,30 +8,29 @@ foreach my $file (@ARGV){
     while (my $line = <FILE>){
         chomp $line;
         if (($line =~ /^#/) or ($line =~ /^sample\tchr/)){
-        next;
+        	next;
         }
         my @line = split (/\t/, $line);
         my $chr = $line[0];
-        $chr =~ s/^chr// if ($chr =~ /^chr/);
         my $chr02d = $chr;
         $chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
         my $pos = $line[1];
         my $ref = $line[3];
         my $type = $1 if ($line[7] =~ /TYPE=(.+?);/);
         if ($type eq 'ALU'){
-        $type = 'ALU';
+        	$type = 'ALU';
         }
         elsif ($type eq 'SV'){
-        $type = 'SVA';
+        	$type = 'SVA';
         }
         elsif ($type eq 'HE'){
-        $type = 'HERVK';
+        	$type = 'HERVK';
         }
         elsif ($type eq 'MT'){
-        $type = 'NUMT';
+        	$type = 'NUMT';
         }
         elsif (($type ne 'L1') and ($type ne 'LINE1')){
-        $type = 'VEI';
+        	$type = 'VEI';
         }
         my $len = 0;
         $len = $1 if ($line[7] =~ /MEILEN=(\d+)/);
@@ -47,7 +42,7 @@ foreach my $file (@ARGV){
         my $strand = $1 if ($line[7] =~ /STRAND=([+\-])/);
         my $class = $type;
         if (($type ne 'NUMT') and ($type ne 'VEI')){
-        $class = 'MEI';
+        	$class = 'MEI';
         }
         my $gt = $1 if ($line[9] =~ /^(.+?):/);
         $gt = './.' if ($gt ne '1/1') and ($gt ne '0/1') and ($gt ne '1/0');
