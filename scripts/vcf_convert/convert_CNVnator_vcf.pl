@@ -2,8 +2,6 @@
 use strict;
 use FindBin qw($Bin);
 
-# covert Delly output files to vcf
-
 my $min_del_len = 3000;
 my $max_del_len = 15000000;
 my $max_dup_len = 30000000;
@@ -144,7 +142,6 @@ while (my $line = <FILE>){
 	$reads = 3 if ($len > 1000000) and ($len <= 2000000) and ($Q0_rate <= 0.01);
 	$reads = 2 if ($len > 2000000) and ($Q0_rate <= 0.01)
     }
-    next if ($chr !~ /^c*h*r*[\dXY]+$/);
     my $chr_02d = $chr2;
     $chr_02d = sprintf ("%02d", $chr2) if ($chr2 =~ /^\d+$/);
     my $gt = './.';
