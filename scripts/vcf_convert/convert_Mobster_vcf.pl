@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert Mobster output files to vcf
-
 my $file = shift @ARGV;
 die "The second arg (MEI|VEI|NUMT) is missing:\n" if (@ARGV == 0);
 my $tag = shift @ARGV;
@@ -47,14 +45,12 @@ while (my $line = <FILE>){
     next if ($len < 150);
     my $reads = 0;
     $reads = $1 if ($line[7] =~ /.+=(\d+)$/);
-    next if ($reads <= 2);
     my $split_reads = $line[12] + $line[13];
     next if ($split_reads < 0);
     my $class = $type;
     if (($type ne 'NUMT') and ($type ne 'VEI')){
 	$class = 'MEI';
     }
-    next if ($chr !~ /^\d+$|[XY]/);
     print "$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$class;SVLEN=$len;READS=$reads;SP_READS=$split_reads\n";
 }
 close (FILE);
