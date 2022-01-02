@@ -1,14 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert GASVpro output file to vcf
-
-my $target_chr = '17';
-
-my $min_sv_len = 30;
-
-my $min_reads = 2;
-
 my $min_qual = 0;
 
 my $min_ins_dist = 170;
@@ -115,7 +107,6 @@ foreach my $var_file (@file){
 		$pre_line = '';
 		next;
 	    }
-	    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	    my $chr02d = $chr;
 	    $chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	    if (($type ne 'INS') or (($type eq 'INS') and (abs ($pre_ins - $pos) >= $min_ins_dist) and ($qual >= $min_qual))){
@@ -155,7 +146,6 @@ foreach my $var_file (@file){
 	}
 	my $qual = $pre_line[2];
 	next if ($type eq 'unknown');
-	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	my $chr02d = $chr;
 	$chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	if (($type ne 'INS') or (($type eq 'INS') and (abs ($pre_ins - $pos) >= $min_ins_dist) and ($qual >= $min_qual))){
