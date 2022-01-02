@@ -1,8 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert DIGTYPER output files to vcf
-
 foreach my $file (@ARGV){
     open (FILE, $file) or die "$file is not found: $!\n";
     while (my $line = <FILE>){
@@ -12,7 +10,7 @@ foreach my $file (@ARGV){
         }
         my @line = split (/\s+/, $line);
         my $chr = $line[0];
-        next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
+        next if ($chr !~ /^c*h*r*[\dXY]+$/);
         my $pos = $line[1];
         my $len = $1 if ($line[7] =~ /SVLEN=(\d+)/);
         my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
