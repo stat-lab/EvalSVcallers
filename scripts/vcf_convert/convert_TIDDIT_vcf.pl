@@ -1,26 +1,22 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert TIDDIT vcf file to vcf
-
 my $file = shift @ARGV;
 
 open (FILE, $file) or die "$file is not found: $!\n";
 while (my $line = <FILE>){
     chomp $line;
     if (($line =~ /^#/) or ($line =~ /^sample\tchr/)){
-		next;
+	next;
     }
     my @line = split (/\t/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     my $pos = $line[1];
     my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
     $type = 'DUP' if ($type eq 'TDUP');
 	next if ($type !~ /DEL|^DUP$|INV/);
 	my $end = $1 if ($line[7] =~ /END=(\d+)/);
 	my $len = $end - $pos + 1;
-    next if ($type eq 'DUP') and ($len < 50);
 	my $reads = 0;
     $reads = $1 if ($line[7] =~ /LTE=(\d+)/);
 	$reads = 10 if ($reads == 0);
