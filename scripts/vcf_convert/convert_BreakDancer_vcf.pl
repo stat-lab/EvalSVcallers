@@ -3,11 +3,7 @@ use strict;
 
 # covert BreakDancer output file to vcf
 
-my $target_chr = '17';
-
-my $min_sv_len = 30;
-
-my $min_reads = 2;
+my $target_chr = '';
 
 my %vcf;
 
@@ -40,7 +36,7 @@ foreach my $var_file (@ARGV){
 	    $type = 'DEL' if ($line[7] > 0);
 	    $type = 'INS' if ($line[7] < 0);
 	}
-	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
+	next if ($chr !~ /^c*h*r*[\dXY]+$/);
 	my $chr_02d = $chr;
 	$chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	if ($type ne 'CTX'){
