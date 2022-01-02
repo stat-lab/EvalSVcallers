@@ -1,14 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert PRISM output files to vcf
-
-my $target_chr = '17';
-
-my $min_sv_len = 30;
-
-my $min_reads = 2;
-
 my %vcf;
 
 foreach my $file (@ARGV){
@@ -27,7 +19,6 @@ foreach my $file (@ARGV){
 	my $svsize = $line[3];
 	my $reads = $line[5];
 	if (($svsize >= $min_sv_len) and ($reads >= $min_reads)){
-	    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
 	    my $chr02d = $chr;
 	    $chr02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	    ${${$vcf{$chr02d}}{$bp1}}{$type} = "SVTYPE=$type;SVLEN=$svsize;BP2=$bp2;READS=$reads";
