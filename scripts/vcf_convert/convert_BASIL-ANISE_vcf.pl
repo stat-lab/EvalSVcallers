@@ -8,10 +8,6 @@ my $var_file = shift @ARGV;
 my $ins_file = '';
 $ins_file = shift @ARGV if (@ARGV > 0) and (-f $ARGV[0]);
 
-my $min_sv_len = 30;
-
-my $min_reads = 2;
-
 my %ins_seq;
 
 my $seq = '';
@@ -63,7 +59,7 @@ while (my $line = <FILE>){
     $oea_read_2 = $1 if ($line[9] =~ /:\d+:(\d+)$/);
     my $reads = 0;
     $reads = int (($oea_read_1 + $oea_read_2) / 2 + 0.5);
-    next if ($chr !~ /^chr/) and ($chr !~ /^\d+$|[XY]/);
+    next if ($chr !~ /^c*h*r*[\dXY]+$/);
     print"$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;READS=$reads\n";
 }
 close (FILE);
