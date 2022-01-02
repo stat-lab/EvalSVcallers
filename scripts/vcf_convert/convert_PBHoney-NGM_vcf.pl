@@ -1,10 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert PBHoney output files (.spots) to vcf
-
-my $min_sv_len = 50;
-
 my $min_supp_read_rate = 0.2;
 
 my %vcf;
@@ -19,11 +15,9 @@ while (my $line = <FILE>){
     next if ($line =~ /^#|^$/);
     my @line = split (/\t/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     my $pos = $line[1];
     my $type = $line[3];
     my $len = $line[4];
-    next if ($len < $min_sv_len);
     next if ($type ne 'DEL');
     my $reads = $1 if ($line[5] =~ /szCount=(\d+)/);
     my $gt = 'GT=./.';
@@ -44,11 +38,9 @@ while (my $line = <FILE>){
     next if ($line =~ /^#|^$/);
     my @line = split (/\t/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
     my $pos = $line[1];
     my $type = $line[3];
     my $len = $line[4];
-    next if ($len < $min_sv_len);
     next if ($type ne 'INS');
     my $reads = $1 if ($line[5] =~ /szCount=(\d+)/);
     my $gt = 'GT=./.';
