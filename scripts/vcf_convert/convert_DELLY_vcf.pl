@@ -1,12 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert Delly output files to vcf
-
-my $target_chr = '17';
-
-my $min_sv_len = 30;
-my $max_sv_len = 2000000;
+my $target_chr = '';
 
 my $qual_filter = 0;
 
@@ -47,7 +42,7 @@ foreach my $file (@ARGV){
 	    $end = 0;
 	    $len = 0;
 	}
-	next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
+	next if ($chr !~ /^c*h*r*[\dXY]+$/);
 	my $chr_02d = $chr;
 	$chr_02d = sprintf ("%02d", $chr) if ($chr =~ /^\d+$/);
 	${${$vcf{$chr_02d}}{$pos}}{$type} = "$chr\t$pos\t$type\t.\t.\t.\t$qual\tSVTYPE=$type;SVLEN=$len;READS=$reads;GT=$gt" if ($type ne 'TRA');
