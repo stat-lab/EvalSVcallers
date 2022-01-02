@@ -1,10 +1,6 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert Hydra output files to vcf
-
-my $min_sv_len = 30;
-
 my %vcf;
 
 foreach my $var_file (@ARGV){
@@ -12,7 +8,7 @@ foreach my $var_file (@ARGV){
     while (my $line = <FILE>){
         chomp $line;
         if ($line =~ /^#/){
-        next;
+        	next;
         }	
         my @line = split (/\t/, $line);
         my $chr = $line[0];
@@ -28,7 +24,6 @@ foreach my $var_file (@ARGV){
         my $len = $end - $pos;
         $len = abs ($len);
         $type = 'INS' if ($len < 10);
-        next if ($len < $min_sv_len) and ($type eq 'DEL');
         my $reads = $line[7];
         ${${$vcf{$chr02d}}{$pos}}{$type} = "$chr\t$pos\t$type\t.\t.\t.\tPASS\tSVTYPE=$type;SVLEN=$len;READS=$reads";
     }
