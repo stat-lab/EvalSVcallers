@@ -1,12 +1,7 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert Delly output files to vcf
-
 my $var_file = shift @ARGV;
-
-my $min_sv_len = 30;
-
 
 open (FILE, $var_file) or die "$var_file is not found: $!\n";
 while (my $line = <FILE>){
@@ -17,7 +12,7 @@ while (my $line = <FILE>){
     }	
     my @line = split (/\t/, $line);
     my $chr = $line[0];
-    next if ($chr !~ /^chr/) and ($chr !~ /^[\dXY]+$/);
+    next if ($chr !~ /^c*h*r*[\dXY]+$/);
     my $pos = $line[1];
     my $end = $line[2];
     my $len = $end - $pos + 1;
@@ -25,7 +20,6 @@ while (my $line = <FILE>){
     my $type = 'DEL' if ($line[4] eq 'loss');
     $type = 'DUP' if ($line[4] eq 'gain');
     next if ($line[4] eq 'normal');
-    next if ($len < $min_sv_len) and ($len > 0);
     my $reads = 0;
     my $score = $line[6];
     if ($score < 0){
