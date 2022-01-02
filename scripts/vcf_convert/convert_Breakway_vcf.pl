@@ -34,7 +34,6 @@ foreach my $var_file (@ARGV){
             $end = $pos;
             $pos = $end2;
         }
-        next if ($chr !~ /^[\dXY]+$/);
         my $type = $line[2];
         $pos = int (($end + $pos) / 2) if ($type eq 'INS');
         my $len = 0;
