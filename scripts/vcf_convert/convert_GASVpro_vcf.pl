@@ -1,15 +1,9 @@
 #!/usr/bin/perl -w
 use strict;
 
-# covert GASVpro output file to vcf
-
 my $var_file = shift @ARGV;
 
-my $target_chr = '17';
-
-my $min_sv_len = 30;
-
-my $min_reads = 2;
+my $target_chr = '';
 
 open (FILE, $var_file) or die "$var_file is not found: $!\n";
 while (my $line = <FILE>){
@@ -21,6 +15,7 @@ while (my $line = <FILE>){
     my @line = split (/\t/, $line);
     my $id = $line[0];
     my $chr1 = $line[1];
+    next if ($chr1 !~ /^c*h*r*[\dXY]+$/);
     my ($start1, $end1) = split (/,/, $line[2]);
     my $start = int (($end1 + $start1) / 2);
     my $chr2 = $line[3];
