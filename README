@@ -81,9 +81,9 @@ scripts/evaluate_SV_callers.pl -r N Pindel.NA78.vcf -p1 Pindel.parent1.vcf -p2 P
 
 (c) Reporting precision and recall of overlap SV calls from pair(s) of tools
 
-scripts/evaluate_SV_overlap_calls.pl -t <tool:RSS list>		# RSS: minimum number of reads supporting an SV  
-                                                            # the working directory must contain vcf files to be tested  
-                                                            # the vcf files must start with tool name (e.g., Delly.*.vcf)
+scripts/evaluate_SV_overlap_calls.pl -t <tool:RSS list>	# RSS: minimum number of reads supporting an SV
+                                                         # the working directory must contain vcf files to be tested
+                                                         # the vcf files must start with tool name (e.g., Delly.*.vcf)
 [Example]
 
 # For overlap calls of NA12878 from BreakDancer-DELLY, BreakDancer-Manta, DELLY-Manta pairs
