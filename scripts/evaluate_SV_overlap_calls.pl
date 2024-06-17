@@ -91,7 +91,7 @@ pod2usage(-verbose => 0) if $help;
 
 =head1 SYNOPSIS
 
-  evaluate_SV_overlap_calls.pl <option> [vcf file] 
+  evaluate_SV_overlap_calls.pl <option> # the working directory must contain vcf files to be tested, each of which starts with tool name (e.g., Manta.sample1.vcf).
 
   Options:
    --ref or -r <STR>        reference SV type  (A|N), A: Sim-A, N: NA12878 [default: N]
