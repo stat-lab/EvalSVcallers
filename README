@@ -82,7 +82,7 @@ scripts/evaluate_SV_callers.pl -r N Pindel.NA78.vcf -p1 Pindel.parent1.vcf -p2 P
 (c) Reporting precision and recall of overlap SV calls from pair(s) of tools
 
 scripts/evaluate_SV_overlap_calls.pl -t <tool:RSS list>  # RSS: minimum number of reads supporting an SV
-(The working directory must contain vcf files to be tested. The vcf files must start with tool name. (e.g., Delly.*.vcf))  
+# The input directory (the working directory by default) must contain vcf files to be tested. The vcf files must start with tool name (e.g., Delly.*.vcf).   
 
 [Example]
 
