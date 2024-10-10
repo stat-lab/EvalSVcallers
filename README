@@ -76,7 +76,7 @@ scripts/evaluate_SV_callers.pl -r N Pindel.NA78.vcf -p1 Pindel.parent1.vcf -p2 P
       --eval_bp or -eb         determine breakpoint and SV size accuracy for each SV type with the Sim-A data [default: false]
       --ins or -i              evaluate accuracy for INSs with called insertion size [default: false]
       --in_y or -y             include chrY [default: false]
-      --out_tf or -of <INT>    output TP, FO, or TP/FP calls of vcf file (0: not output, 1: output TP calls, 2: output FP calls, 3: output TP and FP calls with labels [default: 0]
+      --out_tf or -of <INT>    output TP, FP, or TP/FP calls of vcf file (0: not output, 1: output TP calls, 2: output FP calls, 3: output TP and FP calls with labels [default: 0]
       --sub_me or -sm          substract Mendelian inheritance errors from true positive calls to calculate precision and recall [default: false]
       --help or -h             output help message
 
