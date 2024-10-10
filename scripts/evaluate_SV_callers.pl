@@ -135,7 +135,7 @@ $var_base = $1 if ($var_base =~ /(.+)\./);
    --eval_bp or -eb         determine breakpoint and SV size accuracy for each SV type with the Sim-A data [default: false]
    --ins or -i              evaluate accuracy for INSs with called insertion size [default: false]
    --in_y or -y             include chrY [default: false]
-   --out_tf or -of <INT>    output TP, FO, or TP/FP calls of vcf file (0: not output, 1: output TP calls, 2: output FP calls, 3: output TP and FP calls with labels [default: 0]
+   --out_tf or -of <INT>    output TP, FP, or TP/FP calls of vcf file (0: not output, 1: output TP calls, 2: output FP calls, 3: output TP and FP calls with labels [default: 0]
    --sub_me or -sm          substract Mendelian inheritance errors from true positive calls to calculate precision and recall [default: false]
    --help or -h             output help message
    
@@ -1148,7 +1148,7 @@ while (my $line = <FILE>){
             if ($type eq 'INS'){
                 if ($reads >= $minread){
                     $match_ins_num{$minread} ++;
-		    ${$match_mei_num{$class}}{$minread} ++ if ($class ne '');
+		            ${$match_mei_num{$class}}{$minread} ++ if ($class ne '');
                 }
             }
             else{
@@ -2164,8 +2164,10 @@ if ($out_TF > 0){
             next;
         }
         my ($chr, $pos) = split (/\t/, $line);
-	my $type = $1 if ($line =~ /SVTYPE=(.+?);/);
+        $chr =~ s/^chr// if ($chr =~ /^chr/);
+	    my $type = $1 if ($line =~ /SVTYPE=(.+?);/);
         $type = 'INS' if ($type =~ /MEI|VEI|NUMT/);
+
         if (exists ${${$TP{$chr}}{$pos}}{$type}){
             print OUT1 "$line\n" if ($out_TF == 1);
             print OUT1 "TP $line\n" if ($out_TF == 3);
