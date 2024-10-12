@@ -19,8 +19,10 @@ while (my $line = <FILE>){
     my $gt = './.';
     $gt = $1 if ($line[9] =~ /^([01]\/[01])/);
     $gt = './.' if ($gt eq '0/0');
-    my $mate_chr = $1 if ($alt =~ /(c*h*r*[XY\d]+):\d+/);
-    my $mate_pos = $1 if ($alt =~ /c*h*r*[XY\d]+:(\d+)/);
+    my $mate_chr = '';
+    my $mate_pos = 0;
+    $mate_chr = $1 if ($alt =~ /(c*h*r*[XY\d]+):\d+/);
+    $mate_pos = $1 if ($alt =~ /c*h*r*[XY\d]+:(\d+)/);
     if (exists ${$vcf{$mate_chr}}{$mate_pos}){
         my ($qual1, $len1, $gt1, $alt1) = split (/=/, ${$vcf{$mate_chr}}{$mate_pos});
         my $dir1 = '';
