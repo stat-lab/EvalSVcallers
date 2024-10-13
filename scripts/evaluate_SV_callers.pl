@@ -1714,7 +1714,8 @@ if ((exists $call_dup_num{'A'}) and ($ref_dup_num > 0)){
 	$norecal = ${$recal_dup_num{'S'}}{$read} if (exists ${$recal_dup_num{'S'}}{$read});
         my $dup_ins_hit = 0;
         $dup_ins_hit = ${$nocall_dup_num{'S'}}{$read} if (exists ${$nocall_dup_num{'S'}}{$read});
-        my $recall = int ((${$match_dup_num{'S'}}{$read} + $norecal) / ($ref_dup_s + $dup_ins_hit) * 1000) / 10;
+	my $recall = 0;
+        $recall = int ((${$match_dup_num{'S'}}{$read} + $norecal) / ($ref_dup_s + $dup_ins_hit) * 1000) / 10 if ($ref_dup_s + $dup_ins_hit > 0);
         print "$recall\t";
         print OUT "$recall\t";
     }
@@ -1766,7 +1767,8 @@ if ((exists $call_dup_num{'A'}) and ($ref_dup_num > 0)){
 	$norecal = ${$recal_dup_num{'M'}}{$read} if (exists ${$recal_dup_num{'M'}}{$read});
         my $dup_ins_hit = 0;
         $dup_ins_hit = ${$nocall_dup_num{'M'}}{$read} if (exists ${$nocall_dup_num{'M'}}{$read});
-        my $recall = int ((${$match_dup_num{'M'}}{$read} + $norecal) / ($ref_dup_m + $dup_ins_hit) * 1000) / 10;
+	my $recall = 0;
+        $recall = int ((${$match_dup_num{'M'}}{$read} + $norecal) / ($ref_dup_m + $dup_ins_hit) * 1000) / 10 if ($ref_dup_m + $dup_ins_hit > 0);
         print "$recall\t";
         print OUT "$recall\t";
     }
@@ -1818,7 +1820,8 @@ if ((exists $call_dup_num{'A'}) and ($ref_dup_num > 0)){
 	$norecal = ${$recal_dup_num{'L'}}{$read} if (exists ${$recal_dup_num{'L'}}{$read});
         my $dup_ins_hit = 0;
         $dup_ins_hit = ${$nocall_dup_num{'L'}}{$read} if (exists ${$nocall_dup_num{'L'}}{$read});
-        my $recall = int ((${$match_dup_num{'L'}}{$read} + $norecal) / ($ref_dup_l + $dup_ins_hit) * 1000) / 10;
+	my $recall = 0;
+        $recall = int ((${$match_dup_num{'L'}}{$read} + $norecal) / ($ref_dup_l + $dup_ins_hit) * 1000) / 10 if ($ref_dup_l + $dup_ins_hit > 0);
         print "$recall\t";
         print OUT "$recall\t";
     }
