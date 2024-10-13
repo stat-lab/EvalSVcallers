@@ -18,6 +18,7 @@ while (my $line = <FILE>){
     my $alt = $line[4];
     my $gt = './.';
     $gt = $1 if ($line[9] =~ /^([01]\/[01])/);
+    $gt = $1 if (defined $line[12]) and ($line[12] =~ /^([01]\/[01])/);
     $gt = './.' if ($gt eq '0/0');
     my $mate_chr = '';
     my $mate_pos = 0;
