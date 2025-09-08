@@ -292,7 +292,7 @@ while (my $line = <FILE>){
     my $chr = $line[0];
     next if ($chr =~ /^#/);
     my $chr2 = $chr;
-    $chr =~ s/^chr// if ($chr =~ /^chr/);
+    $chr2 =~ s/^chr// if ($chr2 =~ /^chr/);
     next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
     next if (($chr eq 'Y')) and ($include_y == 0);
     my $pos = $line[1];
@@ -510,7 +510,7 @@ if ($var_parent1 ne ''){
         my $chr = $line[0];
         next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
 	my $chr2 = $chr;
-	$chr =~ s/^chr// if ($chr =~ /^chr/);
+	$chr2 =~ s/^chr// if ($chr2 =~ /^chr/);
         next if ($chr !~ /^\d+$|[XY]/);
         next if (($chr eq 'Y')) and ($include_y == 0);
         my $pos = $line[1];
@@ -589,7 +589,7 @@ if ($var_parent2 ne ''){
         my $chr = $line[0];
         next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
 	my $chr2 = $chr;
-	$chr =~ s/^chr// if ($chr =~ /^chr/);
+	$chr2 =~ s/^chr// if ($chr2 =~ /^chr/);
         next if ($chr !~ /^\d+$|[XY]/);
         next if (($chr eq 'Y')) and ($include_y == 0);
         my $pos = $line[1];
@@ -667,7 +667,7 @@ while (my $line = <FILE>){
     my $chr = $line[0];
     next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
     my $chr2 = $chr;
-    $chr =~ s/^chr// if ($chr =~ /^chr/);
+    $chr2 =~ s/^chr// if ($chr2 =~ /^chr/);
     next if ($chr !~ /^\d+$|[XY]/);
     next if (($chr eq 'Y')) and ($include_y == 0);
     my $pos = $line[1];
