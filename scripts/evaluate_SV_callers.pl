@@ -511,7 +511,7 @@ if ($var_parent1 ne ''){
         next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
 	my $chr2 = $chr;
 	$chr2 =~ s/^chr// if ($chr2 =~ /^chr/);
-        next if ($chr !~ /^c*h*r*|[\dXY]+/);
+        next if ($chr !~ /^c*h*r*[\dXY]+/);
         next if (($chr eq 'Y') or ($chr eq 'chrY')) and ($include_y == 0);
         my $pos = $line[1];
         my $type = '';
@@ -590,7 +590,7 @@ if ($var_parent2 ne ''){
         next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
 	my $chr2 = $chr;
 	$chr2 =~ s/^chr// if ($chr2 =~ /^chr/);
-        next if ($chr !~ /^c*h*r*|[\dXY]+/);
+        next if ($chr !~ /^c*h*r*[\dXY]+/);
         next if (($chr eq 'Y') or ($chr eq 'chrY')) and ($include_y == 0);
         my $pos = $line[1];
         my $type = '';
