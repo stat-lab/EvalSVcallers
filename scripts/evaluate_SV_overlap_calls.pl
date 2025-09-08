@@ -408,7 +408,7 @@ while (my $line = <FILE>){
     my @line = split (/\t/, $line);
     my $chr = $line[0];
     next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
-    next if (($chr eq 'Y')) and ($include_y == 0);
+    next if (($chr eq 'Y') or ($chr eq 'chrY')) and ($include_y == 0);
     my $pos = $line[1];
     my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
     my $type2 = $line[2];
@@ -524,8 +524,8 @@ foreach my $id (keys %parent1_file){
         my $chr = $line[0];
 	$chr =~ s/^chr// if ($chr =~ /^chr/);
         next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
-        next if ($chr !~ /^\d+$|[XY]/);
-        next if ($chr eq 'Y') and ($ref_type eq 'N');
+        next if ($chr !~ /^c*h*r*\d+$|[XY]/);
+        next if (($chr eq 'Y') or ($chr eq 'chrY')) and ($ref_type eq 'N');
         my $pos = $line[1];
         my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
         $type = 'INS' if ($type =~ /MEI|NUMT|VEI/);
@@ -604,8 +604,8 @@ foreach my $id (keys %parent2_file){
         my $chr = $line[0];
 	$chr =~ s/^chr// if ($chr =~ /^chr/);
         next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
-        next if ($chr !~ /^\d+$|[XY]/);
-        next if ($chr eq 'Y') and ($ref_type eq 'N');
+        next if ($chr !~ /^c*h*r*\d+$|[XY]/);
+        next if (($chr eq 'Y') or ($chr eq 'chrY')) and ($ref_type eq 'N');
         my $pos = $line[1];
         my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
         $type = 'INS' if ($type =~ /MEI|NUMT|VEI/);
@@ -677,18 +677,18 @@ foreach my $id (keys %var_file){
 	    my @line = split (/\t/, $line);
 	    my $chr = $line[0];
 	    $hg19_flag = 1 if ($chr =~ /^chr[\dXY]$/);
-	    $chr =~ s/^chr// if ($chr =~ /^chr/);
+#	    $chr =~ s/^chr// if ($chr =~ /^chr/);
 	    
-	    next if ($chr !~ /^\d+$|[XY]/);
+	    next if ($chr !~ /^c*h*r*\d+$|[XY]/);
 	    next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
-            next if (($chr eq 'Y')) and ($include_y == 0);
+        next if (($chr eq 'Y') or ($chr eq 'chrY')) and ($include_y == 0);
 	    my $pos = $line[1];
 	    my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
 	    $type = 'INS' if ($type =~ /MEI|NUMT|VEI/);
 	    if ($sv_type ne 'ALL'){
-		next if ($type ne $sv_type);
+			next if ($type ne $sv_type);
 	    }
-            next if ($type !~ /^DEL$|^DUP$|^INS$|^INV$/);
+        next if ($type !~ /^DEL$|^DUP$|^INS$|^INV$/);
 	    my $len = 0;
 	    $len = $1 if ($line[7] =~ /SVLEN=-*(\d+)/);
 	    next if ($type eq 'INV') and ($len > $max_inv_size);
