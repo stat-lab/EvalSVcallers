@@ -524,7 +524,7 @@ foreach my $id (keys %parent1_file){
         my $chr = $line[0];
 	$chr =~ s/^chr// if ($chr =~ /^chr/);
         next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
-        next if ($chr !~ /^c*h*r*\d+$|[XY]/);
+        next if ($chr !~ /^c*h*r[\dXY]+/);
         next if (($chr eq 'Y') or ($chr eq 'chrY')) and ($ref_type eq 'N');
         my $pos = $line[1];
         my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
@@ -604,7 +604,7 @@ foreach my $id (keys %parent2_file){
         my $chr = $line[0];
 	$chr =~ s/^chr// if ($chr =~ /^chr/);
         next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
-        next if ($chr !~ /^c*h*r*\d+$|[XY]/);
+        next if ($chr !~ /^c*h*r*[\dXY]+/);
         next if (($chr eq 'Y') or ($chr eq 'chrY')) and ($ref_type eq 'N');
         my $pos = $line[1];
         my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
@@ -679,7 +679,7 @@ foreach my $id (keys %var_file){
 	    $hg19_flag = 1 if ($chr =~ /^chr[\dXY]$/);
 #	    $chr =~ s/^chr// if ($chr =~ /^chr/);
 	    
-	    next if ($chr !~ /^c*h*r*\d+$|[XY]/);
+	    next if ($chr !~ /^c*h*r*[\dXY]+/);
 	    next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
         next if (($chr eq 'Y') or ($chr eq 'chrY')) and ($include_y == 0);
 	    my $pos = $line[1];
