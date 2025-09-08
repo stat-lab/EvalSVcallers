@@ -287,14 +287,14 @@ if ($region_bed ne ''){
 open (FILE, $ref_sv) or die "$ref_sv is not found: $!\n";
 while (my $line = <FILE>){
     chomp $line;
-    next if ($line =~ /^#[^\dXY]+/);
+#    next if ($line =~ /^#[^\dXY]+/);
     my @line = split (/\t/, $line);
     my $chr = $line[0];
     next if ($chr =~ /^#/);
     my $chr2 = $chr;
     $chr2 =~ s/^chr// if ($chr2 =~ /^chr/);
     next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
-    next if (($chr eq 'Y')) and ($include_y == 0);
+    next if (($chr eq 'Y') or ($chr eq 'chrY')) and ($include_y == 0);
     my $pos = $line[1];
     my $type = $1 if ($line[7] =~ /SVTYPE=(.+?);/);
     my $type2 = $line[2];
@@ -511,8 +511,8 @@ if ($var_parent1 ne ''){
         next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
 	my $chr2 = $chr;
 	$chr2 =~ s/^chr// if ($chr2 =~ /^chr/);
-        next if ($chr !~ /^\d+$|[XY]/);
-        next if (($chr eq 'Y')) and ($include_y == 0);
+        next if ($chr !~ /^c*h*r*|[\dXY]+/);
+        next if (($chr eq 'Y') or ($chr eq 'chrY')) and ($include_y == 0);
         my $pos = $line[1];
         my $type = '';
         $type = $line[2] if ($line[2] =~ /^DEL$|^DUP$|^INS$|^INV$|^TRA$|^ALU$|^LINE1$|^L1$|^SVA$|^HERVK$|^ERVK$|^VEI$|^NUMT$/i);
@@ -590,8 +590,8 @@ if ($var_parent2 ne ''){
         next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
 	my $chr2 = $chr;
 	$chr2 =~ s/^chr// if ($chr2 =~ /^chr/);
-        next if ($chr !~ /^\d+$|[XY]/);
-        next if (($chr eq 'Y')) and ($include_y == 0);
+        next if ($chr !~ /^c*h*r*|[\dXY]+/);
+        next if (($chr eq 'Y') or ($chr eq 'chrY')) and ($include_y == 0);
         my $pos = $line[1];
         my $type = '';
         $type = $line[2] if ($line[2] =~ /^DEL$|^DUP$|^INS$|^INV$|^TRA$|^ALU$|^LINE1$|^L1$|^SVA$|^HERVK$|^ERVK$|^VEI$|^NUMT$/i);
@@ -668,7 +668,7 @@ while (my $line = <FILE>){
     next if ($target_chr ne 'all') and (($chr ne $target_chr) and ($target_chr !~ /,$chr,|,$chr$|^$chr,/));
     my $chr2 = $chr;
     $chr2 =~ s/^chr// if ($chr2 =~ /^chr/);
-    next if ($chr !~ /^\d+$|[XY]/);
+    next if ($chr !~ /^c*h*r*[\dXY]+/);
     next if (($chr eq 'Y')) and ($include_y == 0);
     my $pos = $line[1];
     my $type = '';
